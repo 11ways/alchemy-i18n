@@ -7,7 +7,7 @@
  * @since    0.0.1
  * @version  0.0.1
  */
-Model.extend(function StaticStringModel(){
+Model.extend(function StaticStringModel() {
 
 	/**
 	 * Update all the keys
@@ -20,7 +20,6 @@ Model.extend(function StaticStringModel(){
 		this.parent();
 		
 		this.domains = {};
-		this.extension = 'No this is the original'
 
 		this.blueprint = {
 			domain: {
@@ -53,9 +52,11 @@ Model.extend(function StaticStringModel(){
 	 */
 	this.update = function update(callback) {
 
-		var that = this;
+		var that = this,
+		    staticString = Model.get('StaticString');
 
-		this.find('all', function(err, items) {
+		// Find all the translations with a regular, non-augmented model
+		staticString.find('all', function(err, items) {
 
 			var i, record, domain;
 
@@ -77,9 +78,5 @@ Model.extend(function StaticStringModel(){
 			if (callback) callback();
 		});
 	};
-
-	this.test = function() {
-		return this.extension;
-	}
 	
 });

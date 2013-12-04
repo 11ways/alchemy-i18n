@@ -11,6 +11,17 @@
  * @param    {Array}   params   Parameters for sprintf()
  */
 var StaticString = function StaticString(domain, key, params) {
+
+	if (typeof params === 'undefined' && typeof key === 'object') {
+		params = key;
+		key = undefined;
+	}
+
+	if (typeof key === 'undefined') {
+		key = domain;
+		domain = 'default';
+	}
+
 	this.domain = domain;
 	this.params = params;
 	this.key    = key;
