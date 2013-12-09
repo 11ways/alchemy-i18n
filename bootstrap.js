@@ -101,7 +101,7 @@ alchemy.sputnik.beforeSerial('startServer', function(callback) {
 
 	// Make sure the i18n drone runs
 	alchemy.hawkejs.afterPayload(function(next, payload) {
-		payload.request.drones['i18n'] = true;
+		payload.request.serialDrones['i18n'] = true;
 		next();
 	});
 });

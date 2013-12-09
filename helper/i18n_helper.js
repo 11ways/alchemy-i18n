@@ -2,6 +2,53 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	
 	// References
 	var helpers = hawkejs.helpers;
+
+	/**
+	 * The i18n drone makes sure every data-i18n element gets translated
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.0.1
+	 * @version  0.0.1
+	 */
+	hawkejs.serialDrones.i18n = function(done, $result) {
+
+		var $elements = hawkejs.µ.select($result, '[data-i18n]'),
+		    translation,
+		    domains,
+		    domain,
+		    key,
+		    $el,
+		    i;
+
+		if (!hawkejs.ClientSide) {
+			domains = Model.get('StaticString').domains;
+		} else {
+			domains = hawkejs.storage.i18ndomains;
+		}
+
+		if ($elements && $elements.length) {
+			for (i = 0; i < $elements.length; i++) {
+
+				// Turn the result into an object
+				$el = hawkejs.µ.objectify($elements[i], $result);
+
+				// Get the domain & key
+				domain = decodeURIComponent($el.attr('data-domain')) || 'default';
+				key = decodeURIComponent($el.attr('data-key'));
+				translation = key;
+
+				// If the key is translated, use that
+				if (domains && domains[key]) {
+					translation = domains[domain][key];
+				}
+
+				// Finally apply the translation or original key
+				$el.html(translation);
+			}
+		}
+
+		done();
+	};
 	
 	/**
 	 * Retrieve the translation of a static string and return it
