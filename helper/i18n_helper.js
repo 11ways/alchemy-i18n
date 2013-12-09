@@ -13,7 +13,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	hawkejs.serialDrones.i18n = function(done, $result) {
 
 		var $elements = hawkejs.µ.select($result, '[data-i18n]'),
-		    translation,
+		    prefix    = this.__prefix,
 		    domains,
 		    domain,
 		    key,
@@ -35,15 +35,9 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				// Get the domain & key
 				domain = decodeURIComponent($el.attr('data-domain')) || 'default';
 				key = decodeURIComponent($el.attr('data-key'));
-				translation = key;
-
-				// If the key is translated, use that
-				if (domains && domains[key]) {
-					translation = domains[domain][key];
-				}
 
 				// Finally apply the translation or original key
-				$el.html(translation);
+				$el.html(helpers.__.call(this, domain, key));
 			}
 		}
 
