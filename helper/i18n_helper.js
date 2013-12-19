@@ -14,11 +14,16 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 		var $elements = hawkejs.µ.select($result, '[data-i18n]'),
 		    prefix    = this.__prefix,
+		    $subElements,
 		    domains,
 		    domain,
+		    text,
+		    attr,
 		    key,
 		    $el,
-		    i;
+		    el,
+		    i,
+		    j;
 
 		if (!hawkejs.ClientSide) {
 			domains = Model.get('StaticString').domains;
@@ -33,11 +38,66 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				$el = hawkejs.µ.objectify($elements[i], $result);
 
 				// Get the domain & key
-				domain = decodeURIComponent($el.attr('data-domain')) || 'default';
-				key = decodeURIComponent($el.attr('data-key'));
+				domain = hawkejs.µ.decode(decodeURIComponent($el.attr('data-domain'))) || 'default';
+				key = hawkejs.µ.decode(decodeURIComponent($el.attr('data-key')));
 
 				// Finally apply the translation or original key
 				$el.html(helpers.__.call(this, domain, key));
+			}
+		}
+
+		// Now go over *every* element and see if any attribute needs translating
+		// It's a bit crazy and wasteful, but there's no better way for now
+		$elements = hawkejs.µ.select($result, '*');
+
+		for (i = 0; i < $elements.length; i++) {
+
+			el = $elements[i];
+
+			if (hawkejs.ClientSide) {
+
+				for (j = 0; j < el.attributes.length; j++) {
+
+					attr = el.attributes[j];
+					key = attr.name;
+
+					if (attr.value.indexOf('hawkejs data-i18n') > -1) {
+
+						try {
+							text = hawkejs.µ.decode(decodeURIComponent(attr.value));
+						} catch (err) {
+							text = '';
+						}
+
+						$el = $('<div>' + text + '</div>');
+
+						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+
+						attr.value = $el.children().first().html();
+					}
+				}
+			} else {
+				for (key in el.attribs) {
+
+					attr = hawkejs.µ.decode(el.attribs[key]);
+
+					if (attr.indexOf('<hawkejs data-i18n') > -1) {
+
+						$el = hawkejs.µ.objectify(attr);
+						
+						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+
+						// Get the complete HTML
+						text = $el.html();
+
+						// Extract the content
+						text = text.split('>').splice(1).join('>').split('<');
+						text.pop();
+						text = text.join('<');
+
+						el.attribs[key] = hawkejs.µ.encode(text);
+					}
+				}
 			}
 		}
 
