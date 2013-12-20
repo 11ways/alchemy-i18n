@@ -1,7 +1,8 @@
 module.exports = function alchemyI18NHelpers(hawkejs) {
 	
 	// References
-	var helpers = hawkejs.helpers;
+	var helpers = hawkejs.helpers,
+	    elRegex = /<hawkejs data-i18n.*?>(.*?)<\/hawkejs>/;
 
 	/**
 	 * The i18n drone makes sure every data-i18n element gets translated
@@ -15,15 +16,20 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		var $elements = hawkejs.µ.select($result, '[data-i18n]'),
 		    prefix    = this.__prefix,
 		    $subElements,
+		    childNodes,
+		    capture,
 		    domains,
 		    domain,
+		    html,
 		    text,
+		    node,
 		    attr,
 		    key,
 		    $el,
 		    el,
 		    i,
-		    j;
+		    j,
+		    k;
 
 		if (!hawkejs.ClientSide) {
 			domains = Model.get('StaticString').domains;
@@ -56,6 +62,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 			if (hawkejs.ClientSide) {
 
+				// Go over all the attributes
 				for (j = 0; j < el.attributes.length; j++) {
 
 					attr = el.attributes[j];
@@ -76,7 +83,42 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 						attr.value = $el.children().first().html();
 					}
 				}
+
+				// Don't to anything to SCRIPT tags
+				if (el.nodeName == 'SCRIPT') {
+					continue;
+				}
+
+				// Go over all the text nodes
+				for (j = 0; j < el.childNodes.length; j++) {
+					node = el.childNodes[j];
+
+					// Only process text nodes
+					if (node.nodeType == 3 && node.nodeValue.indexOf('hawkejs data-i18n') > -1) {
+
+						html = node.nodeValue;
+
+						$el = $('<div>' + html + '</div>');
+
+						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+
+						window.$el = $el;
+
+						childNodes = $el[0].childNodes;
+						
+						// Insert all the new nodes
+						while (childNodes.length) {
+							node.parentNode.insertBefore(childNodes[0], node);
+						}
+
+						// Remove the original node
+						node.parentNode.removeChild(node);
+					}
+				}
+
 			} else {
+
+				// Go over all the attributes
 				for (key in el.attribs) {
 
 					attr = hawkejs.µ.decode(el.attribs[key]);
@@ -88,16 +130,56 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
 
 						// Get the complete HTML
-						text = $el.html();
+						html = $el.html();
 
-						// Extract the content
-						text = text.split('>').splice(1).join('>').split('<');
-						text.pop();
-						text = text.join('<');
+						// Replace the hawkejs stuff
+						capture = elRegex.exec(html);
 
-						el.attribs[key] = hawkejs.µ.encode(text);
+						if (capture && typeof capture[1] !== 'undefined') {
+							capture = capture[1];
+						} else {
+							capture = '';
+						}
+
+						html = html.replace(elRegex, capture);
+
+						el.attribs[key] = hawkejs.µ.encode(html);
 					}
 				}
+
+				// Ignore script elements
+				if (el.type == 'script') {
+					continue;
+				}
+
+				// Go over all the text children
+				for (j = 0; j < el.children.length; j++) {
+					node = el.children[j];
+
+					if (node.type == 'text' && node.data.indexOf('hawkejs data-i18n') > -1) {
+						
+						html = hawkejs.µ.decode(node.data);
+						$el = hawkejs.µ.objectify(html);
+
+						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+
+						html = $el.html();
+
+						// Replace the hawkejs stuff
+						capture = elRegex.exec(html);
+
+						if (capture && typeof capture[1] !== 'undefined') {
+							capture = capture[1];
+						} else {
+							capture = '';
+						}
+
+						html = html.replace(elRegex, capture);
+
+						node.data = html;
+					}
+				}
+				
 			}
 		}
 
