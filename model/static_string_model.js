@@ -41,6 +41,16 @@ Model.extend(function StaticStringModel() {
 				translatable: true
 			}
 		};
+
+		this.modelEdit = {
+			general: {
+				title: __('chimera', 'General'),
+				fields: [
+					{field: 'domain', type: 'String'},
+					{field: 'key', type: 'String'},
+				]
+			}
+		};
 	};
 
 	/**

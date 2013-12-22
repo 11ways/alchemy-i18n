@@ -28,6 +28,17 @@ var StaticString = function StaticString(domain, key, params) {
 };
 
 /**
+ * Give this item a replace method
+ *
+ * @author   Jelle De Loecker   <jelle@kipdola.be>
+ * @since    0.0.1
+ * @version  0.0.1
+ */
+StaticString.prototype.replace = function replace(needle, replacement) {
+	return this.key.replace(needle, replacement);
+};
+
+/**
  * Return an HTML presentation of this StaticString,
  * which hawkejs helpers can interpret later on.
  *
