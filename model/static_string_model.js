@@ -46,8 +46,16 @@ Model.extend(function StaticStringModel() {
 			general: {
 				title: __('chimera', 'General'),
 				fields: [
-					{field: 'domain', type: 'String'},
-					{field: 'key', type: 'String'},
+					{
+						field: 'domain',
+						type: 'String',
+						title: __('i18n', 'Domain')
+					},
+					{
+						field: 'key',
+						type: 'String',
+						title: __('i18n', 'Key')
+					},
 				]
 			}
 		};
