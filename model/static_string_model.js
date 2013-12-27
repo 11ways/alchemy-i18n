@@ -57,6 +57,15 @@ Model.extend(function StaticStringModel() {
 						title: __('i18n', 'Key')
 					},
 				]
+			},
+			translations: {
+				fields: [
+					{
+						field: 'translation',
+						type: 'String',
+						title: __('i18n', 'Translation')
+					}
+				]
 			}
 		};
 	};
