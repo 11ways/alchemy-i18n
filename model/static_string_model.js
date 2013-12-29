@@ -49,7 +49,8 @@ Model.extend(function StaticStringModel() {
 					{
 						field: 'domain',
 						type: 'String',
-						title: __('i18n', 'Domain')
+						title: __('i18n', 'Domain'),
+						default: 'default'
 					},
 					{
 						field: 'key',
