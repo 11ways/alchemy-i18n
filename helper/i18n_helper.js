@@ -266,12 +266,11 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				$el = $('<div>' + value + '</div>');
 				hawkejs.serialDrones.i18n.call(this, function(){}, $el);
 				value = $el.children().first().html();
-				return value;
 			} else {
-				hawkejs.µ.encode(value);
+				value = hawkejs.µ.encode(value);
 			}
-		} else {
-			return value;
 		}
+
+		return value;
 	};
 };
