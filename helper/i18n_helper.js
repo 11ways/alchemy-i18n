@@ -240,4 +240,38 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		return entry;
 	};
 
+	/**
+	 * Resolve an i18n string right now on the ClientSide, not when the drone fires.
+	 * This can be useful when content needs to be placed where no 
+	 * html is allowed, like inside options.
+	 *
+	 * On the server side it just passes the content along, as Cheerio does not
+	 * remove invalid HTML
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.0.1
+	 * @version  0.0.1
+	 *
+	 * @param    {String}   value    The possible i18n string/object
+	 */
+	helpers.__r = function __r(value) {
+
+		var html,
+		    $el;
+
+		// This is only a problem on the client side
+		if (hawkejs.ClientSide) {
+			if (typeof value == 'string' && value.substr(1,17) === 'hawkejs data-i18n') {
+
+				$el = $('<div>' + value + '</div>');
+				hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+				value = $el.children().first().html();
+				return value;
+			} else {
+				hawkejs.µ.encode(value);
+			}
+		} else {
+			return value;
+		}
+	};
 };
