@@ -13,7 +13,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 */
 	hawkejs.serialDrones.i18n = function(done, $result) {
 
-		var $elements = hawkejs.µ.select($result, '[data-i18n]'),
+		var $elements = hawkejs.utils.select($result, '[data-i18n]'),
 		    prefix    = this.__prefix,
 		    $subElements,
 		    childNodes,
@@ -41,11 +41,11 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 			for (i = 0; i < $elements.length; i++) {
 
 				// Turn the result into an object
-				$el = hawkejs.µ.objectify($elements[i], $result);
+				$el = hawkejs.utils.objectify($elements[i], $result);
 
 				// Get the domain & key
-				domain = hawkejs.µ.decode(decodeURIComponent($el.attr('data-domain'))) || 'default';
-				key = hawkejs.µ.decode(decodeURIComponent($el.attr('data-key')));
+				domain = hawkejs.utils.decode(decodeURIComponent($el.attr('data-domain'))) || 'default';
+				key = hawkejs.utils.decode(decodeURIComponent($el.attr('data-key')));
 
 				// Finally apply the translation or original key
 				$el.html(helpers.__.call(this, domain, key));
@@ -54,7 +54,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 		// Now go over *every* element and see if any attribute needs translating
 		// It's a bit crazy and wasteful, but there's no better way for now
-		$elements = hawkejs.µ.select($result, '*');
+		$elements = hawkejs.utils.select($result, '*');
 
 		for (i = 0; i < $elements.length; i++) {
 
@@ -71,7 +71,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 					if (attr.value.indexOf('hawkejs data-i18n') > -1) {
 
 						try {
-							text = hawkejs.µ.decode(decodeURIComponent(attr.value));
+							text = hawkejs.utils.decode(decodeURIComponent(attr.value));
 						} catch (err) {
 							text = '';
 						}
@@ -121,11 +121,11 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				// Go over all the attributes
 				for (key in el.attribs) {
 
-					attr = hawkejs.µ.decode(el.attribs[key]);
+					attr = hawkejs.utils.decode(el.attribs[key]);
 
 					if (attr.indexOf('<hawkejs data-i18n') > -1) {
 
-						$el = hawkejs.µ.objectify(attr);
+						$el = hawkejs.utils.objectify(attr);
 						
 						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
 
@@ -143,7 +143,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 						html = html.replace(elRegex, capture);
 
-						el.attribs[key] = hawkejs.µ.encode(html);
+						el.attribs[key] = hawkejs.utils.encode(html);
 					}
 				}
 
@@ -158,8 +158,8 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 					if (node.type == 'text' && node.data.indexOf('hawkejs data-i18n') > -1) {
 						
-						html = hawkejs.µ.decode(node.data);
-						$el = hawkejs.µ.objectify(html);
+						html = hawkejs.utils.decode(node.data);
+						$el = hawkejs.utils.objectify(html);
 
 						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
 
@@ -267,7 +267,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				hawkejs.serialDrones.i18n.call(this, function(){}, $el);
 				value = $el.children().first().html();
 			} else {
-				value = hawkejs.µ.encode(value);
+				value = hawkejs.utils.encode(value);
 			}
 		}
 
