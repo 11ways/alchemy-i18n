@@ -1,3 +1,5 @@
+var initialUpdate = false;
+
 /**
  * Internationalization model
  *
@@ -71,6 +73,60 @@ Model.extend(function StaticStringModel() {
 		};
 	};
 
+	this.afterSave = function afterSave() {
+		this.parent();
+
+		this.update();
+	};
+
+	/**
+	 * Register a key: make sure an entry exists in the database
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.0.1
+	 * @version  0.0.1
+	 *
+	 * @param    {String}  domain   The domain the key is in
+	 * @param    {String}  key      The string key
+	 */
+	this.register = function register(domain, key) {
+
+		var that = this;
+
+		// Get all of the domains and their keys
+		this.getAll(function(domains) {
+
+			// If the domain or the key isn't found, add it to the database
+			if (!domains[domain] || !(key in domains[domain])) {
+				that.save({
+					StaticString: {
+						domain: domain,
+						key: key
+					}
+				});
+			}
+		});
+	};
+
+	/**
+	 * Get all the domains and their keys
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.0.1
+	 * @version  0.0.1
+	 *
+	 * @param    {Function}   callback   The callback which received the domains
+	 */
+	this.getAll = function getAll(callback) {
+		if (!initialUpdate || !this.domains) {
+			this.update(function(domains) {
+				callback(domains);
+			});
+		} else {
+			callback(this.domains);
+		}
+	};
+
 	/**
 	 * Update all the keys
 	 *
@@ -103,7 +159,10 @@ Model.extend(function StaticStringModel() {
 				domain[record.key] = record.translation;
 			}
 
-			if (callback) callback();
+			// Indicate we've updated at least once
+			initialUpdate = true;
+
+			if (callback) callback(that.domains);
 		});
 	};
 	

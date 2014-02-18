@@ -1,3 +1,4 @@
+var seen = {};
 
 /**
  * The StaticString class
@@ -12,6 +13,7 @@
  */
 var StaticString = function StaticString(domain, key, params) {
 
+	// Normalize the input parameters
 	if (typeof params === 'undefined' && typeof key === 'object') {
 		params = key;
 		key = undefined;
@@ -25,6 +27,18 @@ var StaticString = function StaticString(domain, key, params) {
 	this.domain = domain;
 	this.params = params;
 	this.key    = key;
+
+	// Register the keys
+	if (!seen[domain]) {
+		seen[domain] = {};
+	}
+
+	if (!seen[domain][key]) {
+		alchemy.ready(function() {
+			Model.get('StaticString').register(domain, key);
+			seen[domain][key] = true;
+		});
+	}
 };
 
 /**
@@ -105,7 +119,7 @@ alchemy.sputnik.beforeSerial('startServer', function(callback) {
 	var Static  = Model.get('StaticString'),
 	    domains = Static.domains;
 
-	Static.update(function() {
+	Static.update(function(domains) {
 		// Allow the server to start and accept connections
 		callback();
 	});
