@@ -5,6 +5,17 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	    elRegex = /<hawkejs data-i18n.*?>(.*?)<\/hawkejs>/;
 
 	/**
+	 * Apply the i18n drone after a hawkejs history change
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.0.1
+	 * @version  0.0.1
+	 */
+	hawkejs.event.on('historyChange', function(type, data) {
+		hawkejs.serialDrones.i18n.call(data.payload.__variables, function(){}, data.element);
+	});
+
+	/**
 	 * The i18n drone makes sure every data-i18n element gets translated
 	 *
 	 * @author   Jelle De Loecker   <jelle@codedor.be>
@@ -17,6 +28,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		    prefix    = this.__prefix,
 		    $subElements,
 		    childNodes,
+		    scriptType,
 		    capture,
 		    domains,
 		    domain,
@@ -58,6 +70,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 
 		for (i = 0; i < $elements.length; i++) {
 
+			scriptType = false;
 			el = $elements[i];
 
 			if (hawkejs.ClientSide) {
@@ -84,9 +97,20 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 					}
 				}
 
-				// Don't to anything to SCRIPT tags
+				// Don't to anything to SCRIPT tags, except when they're html types
 				if (el.nodeName == 'SCRIPT') {
-					continue;
+
+					scriptType = el.attributes.getNamedItem('type');
+
+					if (!scriptType) {
+						continue;
+					}
+
+					scriptType = String(scriptType.value);
+
+					if (scriptType.indexOf('html') < 0) {
+						continue;
+					}
 				}
 
 				// Go over all the text nodes
@@ -147,8 +171,8 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 					}
 				}
 
-				// Ignore script elements
-				if (el.type == 'script') {
+				// Ignore script elements that are not text/html types
+				if (el.type == 'script' && String(el.attribs.type).indexOf('html') < 0) {
 					continue;
 				}
 
