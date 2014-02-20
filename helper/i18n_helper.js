@@ -223,7 +223,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 */
 	helpers.__ = function __(domain, key, params) {
 
-		var fallback = this.__fallback.splice(0),
+		var fallback = this.__fallback.slice(0),
 		    prefix   = this.__prefix,
 		    domains,
 		    entry,
