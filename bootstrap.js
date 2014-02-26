@@ -1,4 +1,7 @@
-var seen = {};
+var countryData = alchemy.use('country-data'),
+    countries   = alchemy.shared('I18n.countries'),
+    seen        = {},
+    code;
 
 /**
  * The StaticString class
@@ -138,3 +141,14 @@ alchemy.addMiddleware(98, 'i18n', function(req, res, next){
 	}
 	next();
 });
+
+// Create the country list
+for (code in countryData.countries) {
+
+	// Only use the alpha3 codes
+	if (code.length < 3) {
+		continue;
+	}
+
+	countries[code] = __('countries', countryData.countries[code].name);
+}
