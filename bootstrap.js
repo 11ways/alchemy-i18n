@@ -37,9 +37,14 @@ var StaticString = function StaticString(domain, key, params) {
 	}
 
 	if (!seen[domain][key]) {
+
+		// This won't happen right now, so already set it to true
+		seen[domain][key] = true;
+
 		alchemy.ready(function() {
-			Model.get('StaticString').register(domain, key);
-			seen[domain][key] = true;
+			alchemy.lowPriority(function(ms) {
+				Model.get('StaticString').register(domain, key);
+			}, 500);
 		});
 	}
 };
