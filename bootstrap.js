@@ -147,6 +147,20 @@ alchemy.addMiddleware(98, 'i18n', function(req, res, next){
 	next();
 });
 
+// Expose the i18n settings to the client
+alchemy.on('render.callback', function(renderCallback, callback) {
+	
+	if (!renderCallback.req.ajax) {
+		renderCallback.req.variables.__expose.i18nsettings = {
+			locale: renderCallback.locale,
+			prefix: renderCallback.prefix,
+			fallback: renderCallback.fallback
+		};
+	}
+
+	callback();
+});
+
 // Create the country list
 for (code in countryData.countries) {
 

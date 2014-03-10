@@ -24,11 +24,12 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 */
 	hawkejs.serialDrones.i18n = function(done, $result) {
 
-		var $elements = hawkejs.utils.select($result, '[data-i18n]'),
-		    prefix    = this.__prefix,
+		var $elements,
+		    prefix,
 		    $subElements,
 		    childNodes,
 		    scriptType,
+		    context,
 		    capture,
 		    domains,
 		    domain,
@@ -43,10 +44,30 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		    j,
 		    k;
 
+		// If the appropriate variables aren't found in the context, create it
+		if (hawkejs.ClientSide && !this.__prefix && hawkejs.storage.i18nsettings) {
+			context = {
+				__prefix: hawkejs.storage.i18nsettings.prefix,
+				__fallback: hawkejs.storage.i18nsettings.fallback,
+				__locale: hawkejs.storage.i18nsettings.locale
+			};
+
+			return hawkejs.serialDrones.i18n.call(context, done, $result);
+		}
+
+		prefix = this.__prefix
+
+		$elements = hawkejs.utils.select($result, '[data-i18n]');
+
 		if (!hawkejs.ClientSide) {
 			domains = Model.get('StaticString').domains;
 		} else {
 			domains = hawkejs.storage.i18ndomains;
+
+			// If the given item is a translatable element itself, add it
+			if ($($result).is('[data-i18n]')) {
+				$elements.push($result);
+			}
 		}
 
 		if ($elements && $elements.length) {
