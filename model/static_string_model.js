@@ -1,4 +1,5 @@
-var initialUpdate = false;
+var initialUpdate = false,
+    existing      = alchemy.shared('I18n.seen');
 
 /**
  * Internationalization model
@@ -142,7 +143,7 @@ Model.extend(function StaticStringModel() {
 		// Find all the translations with a regular, non-augmented model
 		staticString.find('all', function(err, items) {
 
-			var i, record, domain;
+			var i, record, domain, entry, translations, defs;
 
 			for (i = 0; i < items.length; i++) {
 
@@ -156,7 +157,14 @@ Model.extend(function StaticStringModel() {
 				// Make a reference to the domain
 				domain = that.domains[record.domain];
 
-				domain[record.key] = record.translation;
+				if (defs = Object.path(existing, record.domain + '.' + record.key + '.defaults')) {
+					translations = {};
+					alchemy.inject(translations, defs, record.translation);
+				} else {
+					translations = record.translation;
+				}
+
+				domain[record.key] = translations;
 			}
 
 			// Indicate we've updated at least once
