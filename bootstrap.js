@@ -1,6 +1,6 @@
 var countryData = alchemy.use('country-data'),
     countries   = alchemy.shared('I18n.countries'),
-    seen        = {},
+    seen        = alchemy.shared('I18n.seen'),
     code;
 
 /**
@@ -13,16 +13,14 @@ var countryData = alchemy.use('country-data'),
  * @param    {String}  domain   The domain the key is in
  * @param    {String}  key      The string key
  * @param    {Array}   params   Parameters for sprintf()
+ * @param    {Object}  defaults Default translations
  */
-var StaticString = function StaticString(domain, key, params) {
+var StaticString = function StaticString(domain, key, params, defaults) {
 
 	// Normalize the input parameters
-	if (typeof params === 'undefined' && typeof key === 'object') {
+	if (typeof key !== 'string') {
+		defaults = params;
 		params = key;
-		key = undefined;
-	}
-
-	if (typeof key === 'undefined') {
 		key = domain;
 		domain = 'default';
 	}
@@ -30,6 +28,7 @@ var StaticString = function StaticString(domain, key, params) {
 	this.domain = domain;
 	this.params = params;
 	this.key    = key;
+	this.defaults = defaults;
 
 	// Register the keys
 	if (!seen[domain]) {
@@ -39,13 +38,17 @@ var StaticString = function StaticString(domain, key, params) {
 	if (!seen[domain][key]) {
 
 		// This won't happen right now, so already set it to true
-		seen[domain][key] = true;
+		seen[domain][key] = this;
 
 		alchemy.ready(function() {
 			alchemy.lowPriority(function(ms) {
 				Model.get('StaticString').register(domain, key);
 			}, 500);
 		});
+	}
+
+	if (defaults && !seen[domain][key].defaults) {
+		seen[domain][key].defaults = defaults;
 	}
 };
 
@@ -73,7 +76,7 @@ StaticString.prototype.replace = function replace(needle, replacement) {
 StaticString.prototype.toHTML = function toHTML() {
 	var html = '<hawkejs data-i18n data-domain="';
 	html += encodeURI(this.domain) + '" data-key="' + encodeURI(this.key) + '" ';
-	html += 'data-params="' + encodeURI(JSON.stringify(this.params)) + '"></hawkejs>';
+	html += 'data-params="' + (this.params ? encodeURI(JSON.stringify(this.params)) : '') + '"></hawkejs>';
 	return html;
 };
 
@@ -118,6 +121,23 @@ StaticString.prototype.toString = function toString() {
  */
 global.__ = function __(domain, key, params) {
 	return new StaticString(domain, key, params);
+};
+
+/**
+ * The translation function that accepts default translations
+ *
+ * @author   Jelle De Loecker   <jelle@codedor.be>
+ * @since    0.0.1
+ * @version  0.0.1
+ *
+ * @param    {String}  domain   The domain the key is in
+ * @param    {String}  key      The string key
+ * @param    {Object}  defaults Default translations
+ *
+ * @return   {StaticString}
+ */
+global.__def = function __(domain, key, defaults) {
+	return new StaticString(domain, key, null, defaults);
 };
 
 // Get all the translations as soon as the database connection is made,
