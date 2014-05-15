@@ -171,3 +171,61 @@ for (code in countryData.countries) {
 
 	countries[code] = __('countries', countryData.countries[code].name);
 }
+
+/**
+ * Attempt to find a country using a fuzzy algorithm
+ *
+ * @author   Jelle De Loecker   <jelle@codedor.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ *
+ * @param    {String}   name   The full name of the country in English
+ *
+ * @return   {String}          The 3-letter country code
+ */
+alchemy.plugins.i18n.findCountry = function findCountry(name) {
+
+	var currentScore = 0,
+	    currentCode,
+	    country,
+	    score,
+	    code;
+
+	if (!name) {
+		return;
+	}
+
+	// Look for "Great Britain"
+	if ('Great Britain'.score(name, 0.9) > 0.7) {
+		return 'GBR';
+	}
+
+	// Remove "The " prefixes
+	name = name.replace('The ', '');
+
+	for (code in countryData.countries) {
+
+		// Create an alias to the country
+		country = countryData.countries[code];
+
+		if (!country.name || !country.alpha3) {
+			continue;
+		}
+
+		// Calculate the score
+		score = country.name.score(name, 0.5);
+
+		// If the score is 1, it's an exact match
+		if (score == 1) {
+			return country.alpha3;
+		}
+
+		// If the score is higher than the previous score, overwrite the code
+		if (score > currentScore) {
+			currentScore = score;
+			currentCode = country.alpha3;
+		}
+	}
+
+	return currentCode;
+};
