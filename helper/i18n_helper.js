@@ -236,7 +236,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@codedor.be>
 	 * @since    0.0.1
-	 * @version  0.0.1
+	 * @version  0.1.0
 	 *
 	 * @param    {String}   domain    The optional domain. Defaults to "default"
 	 * @param    {String}   key       The key
@@ -244,11 +244,19 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 */
 	helpers.__ = function __(domain, key, params) {
 
-		var fallback = this.__fallback.slice(0),
-		    prefix   = this.__prefix,
+		var fallback,
+		    prefix,
 		    domains,
 		    entry,
 		    i;
+
+		if (this && this.__fallback) {
+			fallback = this.__fallback.slice(0);
+			prefix = this.__prefix;
+		} else if (hawkejs.storage && hawkejs.storage.i18nsettings) {
+			fallback = hawkejs.storage.i18nsettings.fallback.slice(0);
+			prefix = hawkejs.storage.i18nsettings.prefix;
+		}
 
 		// Push the main prefix to the top of the fallback array
 		fallback.unshift(prefix);
