@@ -33,6 +33,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		    capture,
 		    domains,
 		    domain,
+		    params,
 		    html,
 		    text,
 		    node,
@@ -79,9 +80,18 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 				// Get the domain & key
 				domain = hawkejs.utils.decode(decodeURIComponent($el.attr('data-domain'))) || 'default';
 				key = hawkejs.utils.decode(decodeURIComponent($el.attr('data-key')));
+				params = hawkejs.utils.decode(decodeURIComponent($el.attr('data-params')));
+
+				if (params) {
+					try {
+						params = JSON.parse(params);
+					} catch (e) {
+						params = undefined;
+					}
+				}
 
 				// Finally apply the translation or original key
-				$el.html(helpers.__.call(this, domain, key));
+				$el.html(helpers.__.call(this, domain, key, params));
 			}
 		}
 
@@ -240,7 +250,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 *
 	 * @param    {String}   domain    The optional domain. Defaults to "default"
 	 * @param    {String}   key       The key
-	 * @param    {Object}   params    Optional sprintf parameters
+	 * @param    {Object}   params    Optional placeholders
 	 */
 	helpers.__ = function __(domain, key, params) {
 
@@ -290,7 +300,30 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 			}
 		}
 
+		if (params) {
+			entry = entry.fillPlaceholders(params);
+		}
+
 		return entry;
+	};
+
+	/**
+	 * Apply placeholders to a string
+	 *
+	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @since    0.1.0
+	 * @version  0.1.0
+	 */
+	helpers.__addPlaceholders = function __addPlaceholders(str, placeholders) {
+
+		if (str.startsWith('<hawkejs data-i18n')) {
+			str = str.replace('data-params=""', 'data-params="' + encodeURI(JSON.stringify(placeholders)) + '"');
+		} else {
+			str = str.fillPlaceholders(placeholders);
+		}
+
+		return str;
+
 	};
 
 	/**

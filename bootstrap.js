@@ -8,26 +8,26 @@ var countryData = alchemy.use('country-data'),
  *
  * @author   Jelle De Loecker   <jelle@kipdola.be>
  * @since    0.0.1
- * @version  0.0.1
+ * @version  0.1.0
  *
- * @param    {String}  domain   The domain the key is in
- * @param    {String}  key      The string key
- * @param    {Array}   params   Parameters for sprintf()
- * @param    {Object}  defaults Default translations
+ * @param    {String}  domain         The domain the key is in
+ * @param    {String}  key            The string key
+ * @param    {Object}  placeholders   Parameters for sprintf()
+ * @param    {Object}  defaults       Default translations
  */
-var StaticString = function StaticString(domain, key, params, defaults) {
+var StaticString = function StaticString(domain, key, placeholders, defaults) {
 
 	// Normalize the input parameters
 	if (typeof key !== 'string') {
-		defaults = params;
-		params = key;
+		defaults = placeholders;
+		placeholders = key;
 		key = domain;
 		domain = 'default';
 	}
 
 	this.domain = domain;
-	this.params = params;
-	this.key    = key;
+	this.key = key;
+	this.placeholders = placeholders;
 	this.defaults = defaults;
 
 	// Register the keys
@@ -76,7 +76,7 @@ StaticString.prototype.replace = function replace(needle, replacement) {
 StaticString.prototype.toHTML = function toHTML() {
 	var html = '<hawkejs data-i18n data-domain="';
 	html += encodeURI(this.domain) + '" data-key="' + encodeURI(this.key) + '" ';
-	html += 'data-params="' + (this.params ? encodeURI(JSON.stringify(this.params)) : '') + '"></hawkejs>';
+	html += 'data-params="' + (this.placeholders ? encodeURI(JSON.stringify(this.placeholders)) : '') + '"></hawkejs>';
 	return html;
 };
 
