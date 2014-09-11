@@ -151,34 +151,20 @@ alchemy.sputnik.beforeSerial('startServer', function(callback) {
 		// Allow the server to start and accept connections
 		callback();
 	});
+});
 
-	// Make sure the i18n drone runs
-	alchemy.hawkejs.afterPayload(function(next, payload) {
-		payload.request.serialDrones['i18n'] = true;
-		next();
+// Expose the i18n settings to the client when the scene is being constructed
+alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {
+
+	// Expose all the translations
+	viewRender.expose('i18ndomains', Model.get('StaticString').domains);
+
+	// Expose this user's settings
+	viewRender.expose('i18nsettings', {
+		locale: renderCallback.locale,
+		prefix: renderCallback.prefix,
+		fallback: renderCallback.fallback
 	});
-});
-
-// Add the middleware to intercept the routes
-alchemy.addMiddleware(98, 'i18n', function(req, res, next){
-	if (!req.ajax) {
-		req.variables.__expose.i18ndomains = Model.get('StaticString').domains;
-	}
-	next();
-});
-
-// Expose the i18n settings to the client
-alchemy.on('render.callback', function(renderCallback, callback) {
-	
-	if (!renderCallback.req.ajax) {
-		renderCallback.req.variables.__expose.i18nsettings = {
-			locale: renderCallback.locale,
-			prefix: renderCallback.prefix,
-			fallback: renderCallback.fallback
-		};
-	}
-
-	callback();
 });
 
 // Create the country list

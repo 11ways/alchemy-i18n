@@ -1,7 +1,7 @@
 {
 	"name": "alchemy-i18n",
 	"description": "The internationalization plugin for the Alchemy MVC",
-	"version": "0.1.0-alpha",
+	"version": "0.2.0-alpha",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/codedor/alchemy-i18n.git"
