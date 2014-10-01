@@ -316,6 +316,8 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 	 */
 	helpers.__addPlaceholders = function __addPlaceholders(str, placeholders) {
 
+		str = String(str);
+
 		if (str.startsWith('<hawkejs data-i18n')) {
 			str = str.replace('data-params=""', 'data-params="' + encodeURI(JSON.stringify(placeholders)) + '"');
 		} else {
