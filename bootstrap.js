@@ -156,14 +156,17 @@ alchemy.sputnik.beforeSerial('startServer', function(callback) {
 // Expose the i18n settings to the client when the scene is being constructed
 alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {
 
+	log.todo('Get conduit in viewRender + set locale stuff')
+	var conduit = viewRender.conduit || {};
+
 	// Expose all the translations
 	viewRender.expose('i18ndomains', Model.get('StaticString').domains);
 
 	// Expose this user's settings
 	viewRender.expose('i18nsettings', {
-		locale: renderCallback.locale,
-		prefix: renderCallback.prefix,
-		fallback: renderCallback.fallback
+		locale: conduit.locale,
+		prefix: conduit.prefix,
+		fallback: conduit.fallback
 	});
 });
 
