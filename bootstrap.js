@@ -3,6 +3,9 @@ var countryData = alchemy.use('country-data'),
     seen        = alchemy.shared('I18n.seen'),
     code;
 
+Router.get('I18n', '/i18n/:domain/:key', 'I18n#translation');
+
+return;
 /**
  * The StaticString class
  *
