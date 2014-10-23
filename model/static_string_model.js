@@ -24,6 +24,8 @@ Model.extend(function StaticStringModel() {
 		
 		this.domains = {};
 
+		this.displayField = 'key';
+
 		this.blueprint = {
 			domain: {
 				type: 'String',
