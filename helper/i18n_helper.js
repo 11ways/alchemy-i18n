@@ -27,6 +27,8 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		var $elements,
 		    prefix,
 		    $subElements,
+		    textNodeList,
+		    textNodeConc,
 		    childNodes,
 		    scriptType,
 		    context,
@@ -34,6 +36,7 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		    domains,
 		    domain,
 		    params,
+		    temp,
 		    html,
 		    text,
 		    node,
@@ -43,7 +46,8 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 		    el,
 		    i,
 		    j,
-		    k;
+		    k,
+		    l;
 
 		// If the appropriate variables aren't found in the context, create it
 		if (hawkejs.ClientSide && !this.__prefix && hawkejs.storage.i18nsettings) {
@@ -144,30 +148,47 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 					}
 				}
 
-				// Go over all the text nodes
+				textNodeList = [];
+				textNodeConc = '';
+				temp = [];
+
+				// Go over all the text nodes and merge them if needed
 				for (j = 0; j < el.childNodes.length; j++) {
 					node = el.childNodes[j];
 
 					// Only process text nodes
-					if (node.nodeType == 3 && node.nodeValue.indexOf('hawkejs data-i18n') > -1) {
+					if (node.nodeType == 3) {
+						temp.push(node);
+						textNodeConc += node.nodeValue;
+					}
 
-						html = node.nodeValue;
+					if (el.childNodes[j+1] == null || el.childNodes[j+1].nodeType != 3) {
 
-						$el = $('<div>' + html + '</div>');
-
-						hawkejs.serialDrones.i18n.call(this, function(){}, $el);
-
-						window.$el = $el;
-
-						childNodes = $el[0].childNodes;
-						
-						// Insert all the new nodes
-						while (childNodes.length) {
-							node.parentNode.insertBefore(childNodes[0], node);
+						if (textNodeConc.indexOf('hawkejs data-i18n') > -1) {
+							textNodeList.push({nodes: temp, text: textNodeConc});
 						}
 
-						// Remove the original node
-						node.parentNode.removeChild(node);
+						temp = [];
+						textNodeConc = '';
+					}
+				}
+
+				// Go over all the text nodes containing i18n stuff
+				for (j = 0; j < textNodeList.length; j++) {
+					temp = textNodeList[j];
+
+					$el = $('<div>' + temp.text + '</div>');
+					hawkejs.serialDrones.i18n.call(this, function(){}, $el);
+					childNodes = $el[0].childNodes;
+
+					// Insert all the new nodes
+					while (childNodes.length) {
+						node.parentNode.insertBefore(childNodes[0], node);
+					}
+
+					// Remove the original nodes
+					for (l = 0; l < temp.nodes.length; l++) {
+						node.parentNode.removeChild(temp.nodes[l]);
 					}
 				}
 
@@ -207,12 +228,16 @@ module.exports = function alchemyI18NHelpers(hawkejs) {
 					continue;
 				}
 
+				textNodeList = [];
+				textNodeConc = '';
+
 				// Go over all the text children
+				// This probably needs fixing for multiple child nodes, like above
 				for (j = 0; j < el.children.length; j++) {
 					node = el.children[j];
 
 					if (node.type == 'text' && node.data.indexOf('hawkejs data-i18n') > -1) {
-						
+
 						html = hawkejs.utils.decode(node.data);
 						$el = hawkejs.utils.objectify(html);
 
