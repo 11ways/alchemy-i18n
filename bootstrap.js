@@ -186,7 +186,7 @@ for (code in countryData.countries) {
 
 	// Only use the alpha3 codes
 	if (code.length < 3) {
-		continue;
+		if (code != 'UK') continue;
 	}
 
 	countries[code] = __('countries', countryData.countries[code].name);
