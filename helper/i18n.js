@@ -76,13 +76,16 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 */
 	I18n.setMethod(function getContent(callback) {
 
-		var that = this;
+		var that = this,
+		    translations,
+		    translation,
+		    params,
+		    source;
+
+		params = that.options.parameters
 
 		if (Blast.isNode) {
 			Model.get('I18n').getTranslation(this.domain, this.key, function gotTranslation(err, item) {
-
-				var params = that.options.parameters,
-				    source;
 
 				if (params) {
 					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
@@ -99,7 +102,27 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 				callback(null, that.result);
 			});
 		} else {
-			this.result = 'Todo: implement client translations (' + this.domain + '::' + this.key + ')';
+			translations = this.view.expose('i18n_translations');
+			translation = translations[this.domain];
+
+			if (!translation || !translation[this.key]) {
+				return callback(null, this.result);
+			}
+
+			translation = translation[this.key];
+
+			if (params) {
+				if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && translation.plural) {
+					source = translation.plural;
+				} else {
+					source = translation.singular;
+				}
+
+				that.result = source.assign(that.options.parameters);
+			} else {
+				that.result = translation.singular;
+			}
+
 			callback(null, this.result);
 		}
 	});
@@ -148,6 +171,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		}
 
 		translation = new I18n(domain, key, {parameters: parameters});
+		translation.view = this;
 
 		return translation;
 	});
