@@ -142,16 +142,24 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 */
 	I18n.setMethod(function toString() {
 
-		var element;
+		var element,
+		    result;
+
+		result = this.result || this.key;
+
+		if (this.options.html === false) {
+			this.options.wrap = false;
+			result = result.stripTags();
+		}
 
 		if (this.options.wrap === false) {
-			return this.result || this.key;
+			return result;
 		}
 
 		element = Hawkejs.ElementBuilder.create('x-i18n');
 		element.data('domain', this.domain);
 		element.data('key', this.key);
-		element.setContent(this.result || this.key);
+		element.setContent(result);
 
 		return element.toString();
 	});
@@ -169,6 +177,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	Hawkejs.ViewRender.setMethod(function __(domain, key, parameters) {
 
 		var translation,
+		    html,
 		    wrap;
 
 		if (Object.isObject(key)) {
@@ -181,11 +190,13 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		}
 
 		if (parameters) {
+			html = parameters.html;
 			wrap = parameters.wrap;
 			delete parameters.wrap;
+			delete parameters.html;
 		}
 
-		translation = new I18n(domain, key, {wrap: wrap, parameters: parameters});
+		translation = new I18n(domain, key, {wrap: wrap, html: html, parameters: parameters});
 		translation.view = this;
 
 		return translation;
