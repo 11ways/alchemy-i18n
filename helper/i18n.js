@@ -87,6 +87,10 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		if (Blast.isNode) {
 			Model.get('I18n').getTranslation(this.domain, this.key, function gotTranslation(err, item) {
 
+				if (!item.length) {
+					return callback(null, '');
+				}
+
 				if (params) {
 					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
 						source = item.plural_translation;
@@ -138,8 +142,13 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 */
 	I18n.setMethod(function toString() {
 
-		var element = Hawkejs.ElementBuilder.create('x-i18n');
+		var element;
 
+		if (this.options.wrap === false) {
+			return this.result || this.key;
+		}
+
+		element = Hawkejs.ElementBuilder.create('x-i18n');
 		element.data('domain', this.domain);
 		element.data('key', this.key);
 		element.setContent(this.result || this.key);
@@ -159,7 +168,8 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 */
 	Hawkejs.ViewRender.setMethod(function __(domain, key, parameters) {
 
-		var translation;
+		var translation,
+		    wrap;
 
 		if (Object.isObject(key)) {
 			parameters = key;
@@ -170,7 +180,12 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			domain = 'default';
 		}
 
-		translation = new I18n(domain, key, {parameters: parameters});
+		if (parameters) {
+			wrap = parameters.wrap;
+			delete parameters.wrap;
+		}
+
+		translation = new I18n(domain, key, {wrap: wrap, parameters: parameters});
 		translation.view = this;
 
 		return translation;
