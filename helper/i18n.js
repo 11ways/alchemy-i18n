@@ -87,7 +87,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		if (Blast.isNode) {
 			Model.get('I18n').getTranslation(this.domain, this.key, function gotTranslation(err, item) {
 
-				if (!item.length) {
+				if (err || !item || item.length === 0) {
 					return callback(null, '');
 				}
 
