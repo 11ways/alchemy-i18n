@@ -74,6 +74,18 @@ Model.extend(function StaticStringModel() {
 				]
 			}
 		};
+
+		this.modelIndex = {
+			fields: [
+				'domain',
+				'key',
+				{
+					field: 'translation',
+					type: 'String',
+					path: 'en'
+				}
+			]
+		};
 	};
 
 	this.afterSave = function afterSave() {
