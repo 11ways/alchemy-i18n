@@ -9,19 +9,42 @@
  */
 var I18n = Model.extend(function I18nModel(options) {
 
-	var chimera,
-	    list,
+	I18nModel.super.call(this, options);
+	this.addBehaviour('revision');
+});
+
+/**
+ * Constitute the class wide schema
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    1.0.0
+ * @version  1.0.0
+ */
+I18n.constitute(function addFields() {
+	this.addField('domain', 'String');
+	this.addField('key', 'String');
+	this.addField('singular_translation', 'Text');
+	this.addField('plural_translation', 'Text');
+});
+
+/**
+ * Configure chimera for this model
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    1.0.0
+ * @version  1.0.0
+ */
+I18n.constitute(function chimeraConfig() {
+
+	var list,
 	    edit;
 
-	I18nModel.super.call(this, options);
-
-	this.addBehaviour('revision');
-
-	// Create the chimera behaviour
-	chimera = this.addBehaviour('chimera');
+	if (!this.chimera) {
+		return;
+	}
 
 	// Get the list group
-	list = chimera.getActionFields('list');
+	list = this.chimera.getActionFields('list');
 
 	list.addField('domain');
 	list.addField('key');
@@ -29,18 +52,13 @@ var I18n = Model.extend(function I18nModel(options) {
 	list.addField('plural_translation');
 
 	// Get the edit group
-	edit = chimera.getActionFields('edit');
+	edit = this.chimera.getActionFields('edit');
 
 	edit.addField('domain');
 	edit.addField('key');
 	edit.addField('singular_translation');
 	edit.addField('plural_translation');
 });
-
-I18n.addField('domain', 'String');
-I18n.addField('key', 'String');
-I18n.addField('singular_translation', 'Text');
-I18n.addField('plural_translation', 'Text');
 
 I18n.setMethod(function getTranslation(domain, key, callback) {
 
