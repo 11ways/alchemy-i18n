@@ -3,6 +3,72 @@ var countryData = alchemy.use('country-data'),
     seen        = alchemy.shared('I18n.seen'),
     code;
 
+Router.get('I18n', '/i18n/:domain/:key', 'I18n#translation');
+
+/**
+ * Create an i18n string
+ *
+ * @author   Jelle De Loecker   <jelle@codedor.be>
+ * @since    1.0.0
+ * @version  1.0.0
+ *
+ * @return   {I18n}
+ */
+global.__ = function __(domain, key, parameters) {
+
+	var translation;
+
+	if (Object.isObject(key)) {
+		parameters = key;
+		key = domain;
+		domain = 'default';
+	} else if (key == null) {
+		key = domain;
+		domain = 'default';
+	}
+
+	translation = new alchemy.classes.I18n(domain, key, {parameters: parameters});
+
+	return translation;
+};
+
+// Expose the translations to the client
+alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {
+
+	var options,
+	    next;
+
+	options = {
+		fields: ['domain', 'key', 'singular_translation', 'plural_translation']
+	};
+
+	next = this.wait('parallel');
+
+	Model.get('I18n').find('all', options, function getAllTranslations(err, items) {
+
+		var domains = {},
+		    item,
+		    i;
+
+		for (i = 0; i < items.length; i++) {
+			item = items[i].I18n;
+
+			if (domains[item.domain] == null) {
+				domains[item.domain] = {};
+			}
+
+			domains[item.domain][item.key] = {
+				singular: item.singular_translation,
+				plural: item.plural_translation
+			}
+		}
+
+		viewRender.expose('i18n_translations', domains);
+		next();
+	});
+});
+
+return;
 /**
  * The StaticString class
  *
@@ -151,34 +217,23 @@ alchemy.sputnik.beforeSerial('startServer', function(callback) {
 		// Allow the server to start and accept connections
 		callback();
 	});
+});
 
-	// Make sure the i18n drone runs
-	alchemy.hawkejs.afterPayload(function(next, payload) {
-		payload.request.serialDrones['i18n'] = true;
-		next();
+// Expose the i18n settings to the client when the scene is being constructed
+alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {
+
+	log.todo('Get conduit in viewRender + set locale stuff')
+	var conduit = viewRender.conduit || {};
+
+	// Expose all the translations
+	viewRender.expose('i18ndomains', Model.get('StaticString').domains);
+
+	// Expose this user's settings
+	viewRender.expose('i18nsettings', {
+		locale: conduit.locale,
+		prefix: conduit.prefix,
+		fallback: conduit.fallback
 	});
-});
-
-// Add the middleware to intercept the routes
-alchemy.addMiddleware(98, 'i18n', function(req, res, next){
-	if (!req.ajax) {
-		req.variables.__expose.i18ndomains = Model.get('StaticString').domains;
-	}
-	next();
-});
-
-// Expose the i18n settings to the client
-alchemy.on('render.callback', function(renderCallback, callback) {
-	
-	if (!renderCallback.req.ajax) {
-		renderCallback.req.variables.__expose.i18nsettings = {
-			locale: renderCallback.locale,
-			prefix: renderCallback.prefix,
-			fallback: renderCallback.fallback
-		};
-	}
-
-	callback();
 });
 
 // Create the country list
