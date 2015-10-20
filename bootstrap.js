@@ -44,7 +44,7 @@ alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, functio
 
 	next = this.wait('parallel');
 
-	Model.get('I18n').find('all', options, function getAllTranslations(err, items) {
+	viewRender.getModel('I18n').find('all', options, function getAllTranslations(err, items) {
 
 		var domains = {},
 		    item,

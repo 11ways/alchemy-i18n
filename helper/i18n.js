@@ -85,7 +85,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		params = that.options.parameters
 
 		if (Blast.isNode) {
-			Model.get('I18n').getTranslation(this.domain, this.key, function gotTranslation(err, item) {
+			Model.get('I18n').getTranslation(this.domain, this.key, this.options.locales, function gotTranslation(err, item) {
 
 				if (err || !item || item.length === 0) {
 					return callback(null, '');
@@ -177,6 +177,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	Hawkejs.ViewRender.setMethod(function __(domain, key, parameters) {
 
 		var translation,
+		    options,
 		    html,
 		    wrap;
 
@@ -196,7 +197,14 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			delete parameters.html;
 		}
 
-		translation = new I18n(domain, key, {wrap: wrap, html: html, parameters: parameters});
+		options = {
+			wrap: wrap,
+			html: html,
+			parameters: parameters,
+			locales: this.internal('locales')
+		};
+
+		translation = new I18n(domain, key, options);
 		translation.view = this;
 
 		return translation;

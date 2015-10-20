@@ -23,8 +23,8 @@ var I18n = Model.extend(function I18nModel(options) {
 I18n.constitute(function addFields() {
 	this.addField('domain', 'String');
 	this.addField('key', 'String');
-	this.addField('singular_translation', 'Text');
-	this.addField('plural_translation', 'Text');
+	this.addField('singular_translation', 'String', {translatable: true});
+	this.addField('plural_translation', 'String', {translatable: true});
 });
 
 /**
@@ -60,7 +60,7 @@ I18n.constitute(function chimeraConfig() {
 	edit.addField('plural_translation');
 });
 
-I18n.setMethod(function getTranslation(domain, key, callback) {
+I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 
 	var options;
 
@@ -75,6 +75,7 @@ I18n.setMethod(function getTranslation(domain, key, callback) {
 			domain: domain,
 			key: key
 		},
+		locale: locales,
 		fields: ['domain', 'key', 'singular_translation', 'plural_translation']
 	};
 
