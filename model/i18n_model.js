@@ -3,9 +3,9 @@
  *
  * @constructor
  *
- * @author   Jelle De Loecker   <jelle@codedor.be>
+ * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.0.1
- * @version  1.0.0
+ * @version  0.2.0
  */
 var I18n = Model.extend(function I18nModel(options) {
 
@@ -17,8 +17,8 @@ var I18n = Model.extend(function I18nModel(options) {
  * Constitute the class wide schema
  *
  * @author   Jelle De Loecker <jelle@develry.be>
- * @since    1.0.0
- * @version  1.0.0
+ * @since    0.2.0
+ * @version  0.2.0
  */
 I18n.constitute(function addFields() {
 	this.addField('domain', 'String');
@@ -31,8 +31,8 @@ I18n.constitute(function addFields() {
  * Configure chimera for this model
  *
  * @author   Jelle De Loecker <jelle@develry.be>
- * @since    1.0.0
- * @version  1.0.0
+ * @since    0.2.0
+ * @version  0.2.0
  */
 I18n.constitute(function chimeraConfig() {
 
@@ -60,6 +60,18 @@ I18n.constitute(function chimeraConfig() {
 	edit.addField('plural_translation');
 });
 
+/**
+ * Get a translation
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    0.2.0
+ * @version  0.2.0
+ *
+ * @param    {String}     domain     The domain/scope/category of the wanted key
+ * @param    {String}     key        The key of the translation to get
+ * @param    {Array}      locales    The locales to get
+ * @param    {Function}   callback   Function to callback with the result
+ */
 I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 
 	var options;

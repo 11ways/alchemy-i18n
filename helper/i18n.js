@@ -3,9 +3,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	/**
 	 * The I18n class
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
+	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.0.1
-	 * @version  1.0.0
+	 * @version  0.2.0
 	 *
 	 * @param    {String}  domain      The domain the key is in
 	 * @param    {String}  key         The string key
@@ -26,9 +26,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	/**
 	 * unDry an object
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
-	 * @since    1.0.0
-	 * @version  1.0.0
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
 	 *
 	 * @return   {Object}
 	 */
@@ -48,9 +48,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	/**
 	 * Return an object for json-drying this i18n object
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
-	 * @since    1.0.0
-	 * @version  1.0.0
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
 	 *
 	 * @return   {Object}
 	 */
@@ -68,9 +68,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	/**
 	 * Callback with the translated content (for Hawkejs)
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
-	 * @since    1.0.0
-	 * @version  1.0.0
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
 	 *
 	 * @param    {Function}   callback
 	 */
@@ -134,9 +134,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	/**
 	 * Return the result (for Hawkejs)
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
-	 * @since    1.0.0
-	 * @version  1.0.0
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
 	 *
 	 * @return   {String}
 	 */
@@ -156,21 +156,21 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			return result;
 		}
 
-		element = Hawkejs.ElementBuilder.create('x-i18n');
-		element.data('domain', this.domain);
-		element.data('key', this.key);
-		element.setContent(result);
+		element = this.view.createElement('x-i18n');
+		element.dataset.domain = this.domain;
+		element.dataset.key = this.key;
+		element.innerHTML = result;
 
-		return element.toString();
+		return element.outerHTML;
 	});
 
 	/**
 	 * Create an i18n string from inside the view.
 	 * Still needs to be printed to the view.
 	 *
-	 * @author   Jelle De Loecker   <jelle@codedor.be>
-	 * @since    1.0.0
-	 * @version  1.0.0
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
 	 *
 	 * @return   {I18n}
 	 */

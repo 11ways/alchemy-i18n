@@ -1,16 +1,20 @@
 {
 	"name": "alchemy-i18n",
 	"description": "The internationalization plugin for the Alchemy MVC",
-	"version": "0.2.0-alpha",
+	"version": "0.2.0",
+	"author": "Jelle De Loecker <jelle@develry.be>",
+	"keywords": [
+		"alchemy",
+		"alchemymvc",
+		"plugin",
+		"i18n"
+	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/codedor/alchemy-i18n.git"
-	},
-	"dependencies": {
-		"country-data": "0.0.x"
+		"url": "https://github.com/skerit/alchemy-i18n.git"
 	},
 	"license": "MIT",
 	"engines": {
-		"node": ">=0.8"
+		"node": "~4.5.0"
 	}
 }
