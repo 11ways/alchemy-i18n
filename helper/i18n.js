@@ -5,13 +5,13 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.0.1
-	 * @version  0.2.0
+	 * @version  0.3.0
 	 *
 	 * @param    {String}  domain      The domain the key is in
 	 * @param    {String}  key         The string key
 	 * @param    {Object}  options
 	 */
-	var I18n = Blast.Bound.Function.inherits(function I18n(domain, key, options) {
+	var I18n = Blast.Bound.Function.inherits('Alchemy.Base', function I18n(domain, key, options) {
 
 		if (options == null) {
 			options = {};
@@ -46,6 +46,45 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	});
 
 	/**
+	 * Clone this I18n for JSON-dry
+	 *
+	 * @author   Jelle De Loecker <jelle@develry.be>
+	 * @since    0.3.0
+	 * @version  0.3.0
+	 *
+	 * @param    {WeakMap}   wm
+	 *
+	 * @return   {I18n}
+	 */
+	I18n.setMethod(function dryClone(wm) {
+
+		var result;
+
+		// Create a new i18n instance
+		result = new this.constructor(this.domain, this.key, JSON.clone(this.options, wm));
+
+		return result;
+	});
+
+	/**
+	 * Clone this I18n for Hawkejs
+	 *
+	 * @author   Jelle De Loecker <jelle@develry.be>
+	 * @since    0.3.0
+	 * @version  0.3.0
+	 *
+	 * @param    {WeakMap}    wm
+	 * @param    {ViewRender} viewrender
+	 *
+	 * @return   {I18n}
+	 */
+	I18n.setMethod(function toHawkejs(wm, viewrender) {
+		var result = this.dryClone(wm);
+		result.view = viewrender;
+		return result;
+	});
+
+	/**
 	 * Return an object for json-drying this i18n object
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
@@ -70,7 +109,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0
-	 * @version  0.2.0
+	 * @version  0.3.0
 	 *
 	 * @param    {Function}   callback
 	 */
@@ -87,20 +126,25 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		if (Blast.isNode) {
 			Model.get('I18n').getTranslation(this.domain, this.key, this.options.locales, function gotTranslation(err, item) {
 
+				// If no items are found in the database, use the given key
 				if (err || !item || item.length === 0) {
-					return callback(null, '');
-				}
-
-				if (params) {
-					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
-						source = item.plural_translation;
+					source = that.key;
+				} else {
+					if (params) {
+						if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
+							source = item.plural_translation;
+						} else {
+							source = item.singular_translation;
+						}
 					} else {
 						source = item.singular_translation;
 					}
+				}
 
-					that.result = source.assign(that.options.parameters);
+				if (params) {
+					that.result = source.assign(params);
 				} else {
-					that.result = item.singular_translation;
+					that.result = source;
 				}
 
 				callback(null, that.result);
@@ -110,6 +154,11 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			translation = translations[this.domain];
 
 			if (!translation || !translation[this.key]) {
+
+				if (params) {
+					this.result = this.key.assign(params);
+				}
+
 				return callback(null, this.result);
 			}
 
@@ -133,6 +182,20 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 
 	/**
 	 * Return the result (for Hawkejs)
+	 *
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.2.0
+	 * @version  0.2.0
+	 *
+	 * @return   {String}
+	 */
+	I18n.setMethod(function toHawkejsString(view) {
+		this.view = view;
+		return this.toString();
+	});
+
+	/**
+	 * Return the string result
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0

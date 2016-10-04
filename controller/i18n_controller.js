@@ -2,13 +2,13 @@
  * The I18n Controller class
  *
  * @constructor
- * @extends       alchemy.classes.Controller
+ * @extends       {Alchemy.Controller}
  *
  * @author        Jelle De Loecker   <jelle@develry.be>
  * @since         0.2.0
  * @version       0.2.0
  */
-var I18n = Function.inherits('Controller', function I18nController(conduit, options) {
+var I18n = Function.inherits('Alchemy.Controller', function I18nController(conduit, options) {
 	I18nController.super.call(this, conduit, options);
 });
 

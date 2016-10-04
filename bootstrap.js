@@ -1,5 +1,4 @@
-var countryData = alchemy.use('country-data'),
-    countries   = alchemy.shared('I18n.countries'),
+var countries   = alchemy.shared('I18n.countries'),
     seen        = alchemy.shared('I18n.seen'),
     code;
 
@@ -27,7 +26,7 @@ global.__ = function __(domain, key, parameters) {
 		domain = 'default';
 	}
 
-	translation = new alchemy.classes.I18n(domain, key, {parameters: parameters});
+	translation = new Classes.Alchemy.I18n(domain, key, {parameters: parameters});
 
 	return translation;
 };

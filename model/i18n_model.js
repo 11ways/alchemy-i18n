@@ -7,7 +7,7 @@
  * @since    0.0.1
  * @version  0.2.0
  */
-var I18n = Model.extend(function I18nModel(options) {
+var I18n = Function.inherits('Alchemy.AppModel', function I18nModel(options) {
 
 	I18nModel.super.call(this, options);
 	this.addBehaviour('revision');
