@@ -5,7 +5,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.0.1
-	 * @version  0.3.0
+	 * @version  0.4.0
 	 *
 	 * @param    {String}  domain      The domain the key is in
 	 * @param    {String}  key         The string key
@@ -21,6 +21,12 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		this.domain = domain;
 		this.key = key;
 		this.options = options;
+
+		if (options.parameters) {
+			this.parameters = options.parameters;
+		} else {
+			this.parameters = options;
+		}
 	});
 
 	/**
@@ -89,16 +95,16 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0
-	 * @version  0.2.0
+	 * @version  0.4.0
 	 *
 	 * @return   {Object}
 	 */
 	I18n.setMethod(function toDry() {
 		return {
 			value: {
-				domain: this.domain,
-				key: this.key,
-				options: this.options
+				domain  : this.domain,
+				key     : this.key,
+				options : this.options
 			},
 			path: '__Protoblast.Classes.I18n'
 		};
@@ -121,7 +127,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		    params,
 		    source;
 
-		params = that.options.parameters
+		params = this.parameters;
 
 		if (Blast.isNode) {
 			Model.get('I18n').getTranslation(this.domain, this.key, this.options.locales, function gotTranslation(err, item) {
@@ -171,7 +177,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 					source = translation.singular;
 				}
 
-				that.result = source.assign(that.options.parameters);
+				that.result = source.assign(params);
 			} else {
 				that.result = translation.singular;
 			}
@@ -199,16 +205,27 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0
-	 * @version  0.2.0
+	 * @version  0.4.0
 	 *
 	 * @return   {String}
 	 */
 	I18n.setMethod(function toString() {
 
-		var element,
+		var has_params,
+		    element,
 		    result;
 
-		result = this.result || this.key;
+		has_params = !Object.isEmpty(this.parameters);
+
+		if (this.result) {
+			result = this.result;
+		} else {
+			result = this.key;
+
+			if (has_params) {
+				result = result.assign(this.parameters);
+			}
+		}
 
 		if (this.options.html === false) {
 			this.options.wrap = false;
@@ -219,10 +236,14 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			return result;
 		}
 
-		element = this.view.createElement('x-i18n');
+		element = Hawkejs.createElement('x-i18n');
 		element.dataset.domain = this.domain;
 		element.dataset.key = this.key;
 		element.innerHTML = result;
+
+		if (has_params) {
+			//element.dataset.parameters = String.compressToBase64(JSON.dry(this.parameters));
+		}
 
 		return element.outerHTML;
 	});
