@@ -61,7 +61,6 @@ alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, functio
 				plural: item.plural_translation
 			}
 		}
-
 		viewRender.expose('i18n_translations', domains);
 		next();
 	});

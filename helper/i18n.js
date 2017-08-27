@@ -21,6 +21,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		this.domain = domain;
 		this.key = key;
 		this.options = options;
+		this.suffixes = [];
 
 		if (options.parameters) {
 			this.parameters = options.parameters;
@@ -52,11 +53,24 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	});
 
 	/**
+	 * Add a suffix
+	 *
+	 * @author   Jelle De Loecker <jelle@develry.be>
+	 * @since    0.4.0
+	 * @version  0.4.0
+	 *
+	 * @param    {String}   suffix
+	 */
+	I18n.setMethod(function concat(suffix) {
+		this.suffixes.push(suffix);
+	});
+
+	/**
 	 * Clone this I18n for JSON-dry
 	 *
 	 * @author   Jelle De Loecker <jelle@develry.be>
 	 * @since    0.3.0
-	 * @version  0.3.0
+	 * @version  0.4.0
 	 *
 	 * @param    {WeakMap}   wm
 	 *
@@ -68,6 +82,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 
 		// Create a new i18n instance
 		result = new this.constructor(this.domain, this.key, JSON.clone(this.options, wm));
+
+		// The view should stay the same, though
+		result.view = this.view;
 
 		return result;
 	});
@@ -111,11 +128,24 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	});
 
 	/**
+	 * Get a direct version
+	 *
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.4.0
+	 * @version  0.4.0
+	 */
+	I18n.setMethod(function getDirect() {
+		var result = this.dryClone();
+		result.options.wrap = false;
+		return result;
+	});
+
+	/**
 	 * Callback with the translated content (for Hawkejs)
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0
-	 * @version  0.3.0
+	 * @version  0.4.0
 	 *
 	 * @param    {Function}   callback
 	 */
@@ -126,6 +156,10 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		    translation,
 		    params,
 		    source;
+
+		if (typeof callback != 'function') {
+			callback = Function.dummy;
+		}
 
 		params = this.parameters;
 
@@ -156,7 +190,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 				callback(null, that.result);
 			});
 		} else {
-			translations = this.view.expose('i18n_translations');
+			translations = this.view.expose('i18n_translations') || {};
 			translation = translations[this.domain];
 
 			if (!translation || !translation[this.key]) {
@@ -213,9 +247,17 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 
 		var has_params,
 		    element,
-		    result;
+		    result,
+		    suffix,
+		    i;
 
 		has_params = !Object.isEmpty(this.parameters);
+
+		// If no result has been found yet,
+		// try it now, maybe it can be found synchronously
+		if (!this.result) {
+			this.getContent();
+		}
 
 		if (this.result) {
 			result = this.result;
@@ -232,8 +274,13 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			result = result.stripTags();
 		}
 
+		suffix = '';
+		for (i = 0; i < this.suffixes.length; i++) {
+			suffix += this.suffixes[i];
+		}
+
 		if (this.options.wrap === false) {
-			return result;
+			return result + suffix;
 		}
 
 		element = Hawkejs.createElement('x-i18n');
@@ -245,7 +292,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			//element.dataset.parameters = String.compressToBase64(JSON.dry(this.parameters));
 		}
 
-		return element.outerHTML;
+		return element.outerHTML + suffix;
 	});
 
 	/**
@@ -283,6 +330,50 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 
 		options = {
 			wrap: wrap,
+			html: html,
+			parameters: parameters,
+			locales: this.internal('locales')
+		};
+
+		translation = new I18n(domain, key, options);
+		translation.view = this;
+
+		return translation;
+	});
+
+	/**
+	 * Create an i18n string from inside the view.
+	 * Still needs to be printed to the view.
+	 * This will force wrap to be false
+	 *
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.4.0
+	 * @version  0.4.0
+	 *
+	 * @return   {I18n}
+	 */
+	Hawkejs.ViewRender.setMethod(function __d(domain, key, parameters) {
+
+		var translation,
+		    options,
+		    html;
+
+		if (Object.isObject(key)) {
+			parameters = key;
+			key = domain;
+			domain = 'default';
+		} else if (key == null) {
+			key = domain;
+			domain = 'default';
+		}
+
+		if (parameters) {
+			html = parameters.html;
+			delete parameters.html;
+		}
+
+		options = {
+			wrap: false,
 			html: html,
 			parameters: parameters,
 			locales: this.internal('locales')

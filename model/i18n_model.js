@@ -49,7 +49,7 @@ I18n.constitute(function chimeraConfig() {
 	list.addField('domain');
 	list.addField('key');
 	list.addField('singular_translation');
-	list.addField('plural_translation');
+	//list.addField('plural_translation');
 
 	// Get the edit group
 	edit = this.chimera.getActionFields('edit');
@@ -58,6 +58,13 @@ I18n.constitute(function chimeraConfig() {
 	edit.addField('key');
 	edit.addField('singular_translation');
 	edit.addField('plural_translation');
+
+	// Get the peek group
+	let peek = this.chimera.getActionFields('peek');
+
+	peek.addField('domain');
+	peek.addField('key');
+	peek.addField('singular_translation');
 });
 
 /**
