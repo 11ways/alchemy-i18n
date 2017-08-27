@@ -1,4 +1,4 @@
-## 0.4.0
+## 0.4.0 (2017-08-27)
 
 * Add `__d`: it's `toString` method returns a regular translated string, not HTML
 * Add `I18n#concat(str)` method
