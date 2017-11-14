@@ -5,7 +5,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.0.1
-	 * @version  0.4.0
+	 * @version  0.5.0
 	 *
 	 * @param    {String}  domain      The domain the key is in
 	 * @param    {String}  key         The string key
@@ -22,12 +22,46 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		this.key = key;
 		this.options = options;
 		this.suffixes = [];
+	});
 
-		if (options.parameters) {
-			this.parameters = options.parameters;
-		} else {
-			this.parameters = options;
+	/**
+	 * The parameters
+	 *
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.5.0
+	 * @version  0.5.0
+	 *
+	 * @return   {Object}
+	 */
+	I18n.setProperty(function parameters() {
+		if (this.options.parameters) {
+			return this.options.parameters;
 		}
+
+		return this.options;
+	});
+
+	/**
+	 * The available hawkejs ViewRender
+	 *
+	 * @author   Jelle De Loecker   <jelle@develry.be>
+	 * @since    0.5.0
+	 * @version  0.5.0
+	 *
+	 * @return   {Object}
+	 */
+	I18n.setProperty(function view() {
+
+		if (this._view) {
+			return this._view;
+		}
+
+		if (Blast.isBrowser) {
+			return hawkejs.scene.generalView;
+		}
+
+	}, function setView(view) {
+		this._view = view;
 	});
 
 	/**
@@ -83,6 +117,9 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 		// Create a new i18n instance
 		result = new this.constructor(this.domain, this.key, JSON.clone(this.options, wm));
 
+		// Clone the suffixes too
+		result.suffixes = JSON.clone(this.suffixes);
+
 		// The view should stay the same, though
 		result.view = this.view;
 
@@ -112,18 +149,19 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 	 *
 	 * @author   Jelle De Loecker   <jelle@develry.be>
 	 * @since    0.2.0
-	 * @version  0.4.0
+	 * @version  0.4.1
 	 *
 	 * @return   {Object}
 	 */
 	I18n.setMethod(function toDry() {
 		return {
 			value: {
-				domain  : this.domain,
-				key     : this.key,
-				options : this.options
+				domain   : this.domain,
+				key      : this.key,
+				options  : this.options,
+				suffixes : this.suffixes
 			},
-			path: '__Protoblast.Classes.I18n'
+			path: '__Protoblast.Classes.Alchemy.I18n'
 		};
 	});
 
@@ -283,7 +321,7 @@ module.exports = function I18nHelper(Hawkejs, Blast) {
 			return result + suffix;
 		}
 
-		element = Hawkejs.createElement('x-i18n');
+		element = Hawkejs.Hawkejs.createElement('x-i18n');
 		element.dataset.domain = this.domain;
 		element.dataset.key = this.key;
 		element.innerHTML = result;

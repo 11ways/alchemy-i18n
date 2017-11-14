@@ -46,6 +46,7 @@ I18n.constitute(function chimeraConfig() {
 	// Get the list group
 	list = this.chimera.getActionFields('list');
 
+	list.addField('created');
 	list.addField('domain');
 	list.addField('key');
 	list.addField('singular_translation');
@@ -62,9 +63,20 @@ I18n.constitute(function chimeraConfig() {
 	// Get the peek group
 	let peek = this.chimera.getActionFields('peek');
 
+	peek.addField('created');
+	peek.addField('updated');
 	peek.addField('domain');
 	peek.addField('key');
 	peek.addField('singular_translation');
+});
+
+/**
+ * The default sort options
+ *
+ * @type {Object}
+ */
+I18n.setProperty(function sort() {
+	return {_id: -1};
 });
 
 /**
