@@ -1,4 +1,6 @@
-## 0.4.1 (WIP)
+## 0.5.0 (WIP)
+
+* Add `__` and `__d` method to the `Alchemy.Base` class
 
 ## 0.4.0 (2017-08-27)
 

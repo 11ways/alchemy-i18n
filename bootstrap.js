@@ -1,4 +1,5 @@
-var countries   = alchemy.shared('I18n.countries'),
+var i18n_cache  = alchemy.shared('I18n.cache'),
+    countries   = alchemy.shared('I18n.countries'),
     seen        = alchemy.shared('I18n.seen'),
     code;
 
@@ -30,6 +31,42 @@ global.__ = function __(domain, key, parameters) {
 
 	return translation;
 };
+
+/**
+ * Create an i18n object
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.5.0
+ * @version  0.5.0
+ *
+ * @return   {I18n}
+ */
+Classes.Alchemy.Base.setMethod(function __(domain, key, parameters) {
+
+	if (this.conduit) {
+		return this.conduit.viewRender.__(domain, key, parameters);
+	}
+
+	return new Classes.Alchemy.I18n(domain, key, options);
+});
+
+/**
+ * Create an i18n object
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.5.0
+ * @version  0.5.0
+ *
+ * @return   {I18n}
+ */
+Classes.Alchemy.Base.setMethod(function __d(domain, key, parameters) {
+
+	if (this.conduit) {
+		return this.conduit.viewRender.__d(domain, key, parameters);
+	}
+
+	return new Classes.Alchemy.I18n(domain, key, options);
+});
 
 // Expose the translations to the client
 alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {
