@@ -3,7 +3,7 @@ var i18n_cache  = alchemy.shared('I18n.cache'),
     seen        = alchemy.shared('I18n.seen'),
     code;
 
-Router.get('I18n', '/i18n/:domain/:key', 'I18n#translation');
+Router.get('I18n', '/i18n/{domain}/{key}', 'I18n#translation');
 
 /**
  * Create an i18n string

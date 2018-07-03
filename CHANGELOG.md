@@ -1,6 +1,7 @@
-## 0.5.0 (WIP)
+## 0.5.0 (2018-07-03)
 
 * Add `__` and `__d` method to the `Alchemy.Base` class
+* Make compatible with chimera v0.5.0 & alchemy v1.0.0
 
 ## 0.4.0 (2017-08-27)
 

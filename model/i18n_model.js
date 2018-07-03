@@ -7,9 +7,9 @@
  * @since    0.0.1
  * @version  0.2.0
  */
-var I18n = Function.inherits('Alchemy.AppModel', function I18nModel(options) {
+var I18n = Function.inherits('Alchemy.Model.App', function I18n(options) {
 
-	I18nModel.super.call(this, options);
+	I18n.super.call(this, options);
 	this.addBehaviour('revision');
 });
 
@@ -84,7 +84,7 @@ I18n.setProperty(function sort() {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.2.0
- * @version  0.2.0
+ * @version  1.0.0
  *
  * @param    {String}     domain     The domain/scope/category of the wanted key
  * @param    {String}     key        The key of the translation to get
@@ -99,6 +99,15 @@ I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 		callback = key;
 		key = domain;
 		domain = 'default';
+	}
+
+	if (typeof locales == 'function') {
+		callback = locales;
+		locales = null;
+	}
+
+	if (typeof callback != 'function') {
+		throw new Error('I18n#getTranslation requires a callback');
 	}
 
 	options = {
@@ -116,10 +125,10 @@ I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 			return callback(err);
 		}
 
-		if (item.length == 0) {
+		if (!item) {
 			return callback(null, item);
 		}
 
-		callback(null, item[0]['I18n']);
+		callback(null, item);
 	});
 });
