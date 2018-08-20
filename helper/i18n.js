@@ -181,7 +181,7 @@ I18n.setMethod(function getDirect() {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.4.0
+ * @version  0.5.1
  *
  * @param    {Function}   callback
  */
@@ -203,8 +203,8 @@ I18n.setMethod(function getContent(callback) {
 		Model.get('I18n').getTranslation(this.domain, this.key, this.options.locales, function gotTranslation(err, item) {
 
 			// If no items are found in the database, use the given key
-			if (err || !item || item.length === 0) {
-				source = that.key;
+			if (err || !item) {
+				source = that.options.fallback || that.key;
 			} else {
 				if (params) {
 					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
@@ -232,7 +232,7 @@ I18n.setMethod(function getContent(callback) {
 		if (!translation || !translation[this.key]) {
 
 			if (params) {
-				this.result = this.key.assign(params);
+				this.result = (this.options.fallback || this.key).assign(params);
 			}
 
 			return callback(null, this.result);
@@ -275,7 +275,7 @@ I18n.setMethod(function toHawkejsString(view) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.4.0
+ * @version  0.5.1
  *
  * @return   {String}
  */
@@ -298,7 +298,7 @@ I18n.setMethod(function toString() {
 	if (this.result) {
 		result = this.result;
 	} else {
-		result = this.key;
+		result = this.options.fallback || this.key;
 
 		if (has_params) {
 			result = result.assign(this.parameters);

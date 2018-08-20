@@ -1,3 +1,7 @@
+## 0.5.1 (WIP)
+
+* Add `fallback` support
+
 ## 0.5.0 (2018-07-04)
 
 * Add `__` and `__d` method to the `Alchemy.Base` class

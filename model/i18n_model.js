@@ -14,6 +14,13 @@ var I18n = Function.inherits('Alchemy.Model.App', function I18n(options) {
 });
 
 /**
+ * The default field to use as display
+ *
+ * @type {String}
+ */
+I18n.setProperty('displayField', 'key');
+
+/**
  * Constitute the class wide schema
  *
  * @author   Jelle De Loecker <jelle@develry.be>
