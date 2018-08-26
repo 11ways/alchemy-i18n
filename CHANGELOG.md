@@ -1,4 +1,4 @@
-## 0.5.1 (WIP)
+## 0.5.1 (2018-08-27)
 
 * Add `fallback` support
 * Make `key` the default displayField
