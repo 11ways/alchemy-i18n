@@ -82,7 +82,12 @@ alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, functio
 
 	viewRender.getModel('I18n').find('all', options, function getAllTranslations(err, items) {
 
-		var domains = {},
+		if (err) {
+			console.log('I18N Error:', err);
+			return next(err);
+		}
+
+		let domains = {},
 		    item,
 		    i;
 
@@ -98,6 +103,7 @@ alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, functio
 				plural: item.plural_translation
 			}
 		}
+
 		viewRender.expose('i18n_translations', domains);
 		next();
 	});

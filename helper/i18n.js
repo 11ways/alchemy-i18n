@@ -341,7 +341,7 @@ I18n.setMethod(function toString() {
  *
  * @return   {I18n}
  */
-Hawkejs.ViewRender.setMethod(function __(domain, key, parameters) {
+Hawkejs.Renderer.setCommand(function __(domain, key, parameters) {
 
 	var translation,
 	    options,
@@ -388,7 +388,7 @@ Hawkejs.ViewRender.setMethod(function __(domain, key, parameters) {
  *
  * @return   {I18n}
  */
-Hawkejs.ViewRender.setMethod(function __d(domain, key, parameters) {
+Hawkejs.Renderer.setCommand(function __d(domain, key, parameters) {
 
 	var translation,
 	    options,

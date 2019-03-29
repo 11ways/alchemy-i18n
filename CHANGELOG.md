@@ -1,3 +1,7 @@
+## 0.6.0 (WIP)
+
+* Make compatible with Alchemy v1.1.0
+
 ## 0.5.1 (2018-08-27)
 
 * Add `fallback` support
