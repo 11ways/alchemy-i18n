@@ -177,25 +177,35 @@ I18n.setMethod(function getDirect() {
 });
 
 /**
+ * Backward compatible thing
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.2.0
+ * @version  0.5.1
+ *
+ * @return   {Pledge}
+ */
+I18n.setMethod(function getContent(next) {
+	return this.renderHawkejsContent().done(next);
+});
+
+/**
  * Callback with the translated content (for Hawkejs)
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
  * @version  0.5.1
  *
- * @param    {Function}   callback
+ * @return   {Pledge}
  */
-I18n.setMethod(function getContent(callback) {
+I18n.setMethod(function renderHawkejsContent() {
 
 	var that = this,
 	    translations,
 	    translation,
 	    params,
-	    source;
-
-	if (typeof callback != 'function') {
-		callback = Function.dummy;
-	}
+	    source,
+	    pledge = new Classes.Pledge();
 
 	params = this.parameters;
 
@@ -223,7 +233,8 @@ I18n.setMethod(function getContent(callback) {
 				that.result = source;
 			}
 
-			callback(null, that.result);
+			that.prepareResult(false);
+			pledge.resolve(that[Hawkejs.RESULT]);
 		});
 	} else {
 		translations = this.view.expose('i18n_translations') || {};
@@ -234,26 +245,28 @@ I18n.setMethod(function getContent(callback) {
 			if (params) {
 				this.result = (this.options.fallback || this.key).assign(params);
 			}
-
-			return callback(null, this.result);
-		}
-
-		translation = translation[this.key];
-
-		if (params) {
-			if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && translation.plural) {
-				source = translation.plural;
-			} else {
-				source = translation.singular;
-			}
-
-			that.result = source.assign(params);
 		} else {
-			that.result = translation.singular;
+
+			translation = translation[this.key];
+
+			if (params) {
+				if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && translation.plural) {
+					source = translation.plural;
+				} else {
+					source = translation.singular;
+				}
+
+				that.result = source.assign(params);
+			} else {
+				that.result = translation.singular;
+			}
 		}
 
-		callback(null, this.result);
+		this.prepareResult(false);
+		pledge.resolve(this[Hawkejs.RESULT]);
 	}
+
+	return pledge;
 });
 
 /**
@@ -271,15 +284,13 @@ I18n.setMethod(function toHawkejsString(view) {
 });
 
 /**
- * Return the string result
+ * Prepare the result
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
- * @since    0.2.0
- * @version  0.5.1
- *
- * @return   {String}
+ * @since    0.6.0
+ * @version  0.6.0
  */
-I18n.setMethod(function toString() {
+I18n.setMethod(function prepareResult(fetch_content) {
 
 	var has_params,
 	    element,
@@ -287,12 +298,16 @@ I18n.setMethod(function toString() {
 	    suffix,
 	    i;
 
+	if (this[Classes.Hawkejs.RESULT] != null) {
+		return this[Classes.Hawkejs.RESULT];
+	}
+
 	has_params = !Object.isEmpty(this.parameters);
 
 	// If no result has been found yet,
 	// try it now, maybe it can be found synchronously
-	if (!this.result) {
-		this.getContent();
+	if (fetch_content !== false && !this.result) {
+		this.renderHawkejsContent();
 	}
 
 	if (this.result) {
@@ -316,19 +331,43 @@ I18n.setMethod(function toString() {
 	}
 
 	if (this.options.wrap === false) {
-		return result + suffix;
+		result = result + suffix;
+	} else {
+		element = Hawkejs.Hawkejs.createElement('x-i18n');
+		element.dataset.domain = this.domain;
+		element.dataset.key = this.key;
+		element.innerHTML = result;
+
+		if (suffix) {
+			element.innerHTML += suffix;
+		}
+
+		result = element;
 	}
 
-	element = Hawkejs.Hawkejs.createElement('x-i18n');
-	element.dataset.domain = this.domain;
-	element.dataset.key = this.key;
-	element.innerHTML = result;
+	this[Classes.Hawkejs.RESULT] = result;
 
-	if (has_params) {
-		//element.dataset.parameters = String.compressToBase64(JSON.dry(this.parameters));
+	return result;
+});
+
+/**
+ * Return the string result
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.2.0
+ * @version  0.6.0
+ *
+ * @return   {String}
+ */
+I18n.setMethod(function toString() {
+
+	var result = this.prepareResult();
+
+	if (typeof result == 'string') {
+		return result;
 	}
 
-	return element.outerHTML + suffix;
+	return result.outerHTML;
 });
 
 /**
