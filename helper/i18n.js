@@ -194,11 +194,13 @@ I18n.setMethod(function getContent(next) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.5.1
+ * @version  0.6.0
+ *
+ * @param    {Hawkejs.Renderer}   [renderer]
  *
  * @return   {Pledge}
  */
-I18n.setMethod(function renderHawkejsContent() {
+I18n.setMethod(function renderHawkejsContent(renderer) {
 
 	var that = this,
 	    translations,
@@ -210,7 +212,14 @@ I18n.setMethod(function renderHawkejsContent() {
 	params = this.parameters;
 
 	if (Blast.isNode) {
-		Model.get('I18n').getTranslation(this.domain, this.key, this.options.locales, function gotTranslation(err, item) {
+
+		let locales = this.options.locales;
+
+		if ((!locales || locales.length == 0) && renderer) {
+			locales = renderer.internal('locales');
+		}
+
+		Model.get('I18n').getTranslation(this.domain, this.key, locales, function gotTranslation(err, item) {
 
 			// If no items are found in the database, use the given key
 			if (err || !item) {
