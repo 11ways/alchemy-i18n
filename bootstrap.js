@@ -1,8 +1,11 @@
-var i18n_cache  = alchemy.shared('I18n.cache'),
-    countries   = alchemy.shared('I18n.countries'),
-    seen        = alchemy.shared('I18n.seen'),
-    code;
+const i18n_cache  = alchemy.shared('I18n.cache'),
+      countries   = alchemy.shared('I18n.countries'),
+      seen        = alchemy.shared('I18n.seen'),
+      config      = alchemy.plugins.i18n;
 
+var code;
+
+Router.get('I18n#string', '/i18n/{domain}/{key}/string', 'I18n#string');
 Router.get('I18n', '/i18n/{domain}/{key}', 'I18n#translation');
 
 /**
@@ -67,6 +70,21 @@ Classes.Alchemy.Base.setMethod(function __d(domain, key, parameters) {
 
 	return new Classes.Alchemy.I18n(domain, key, options);
 });
+
+if (config.custom_model) {
+	config.model = config.custom_model;
+} else {
+	config.model = 'I18n';
+}
+
+// Expose the model to use as a static to the client
+alchemy.exposeStatic('i18n_model', config.model);
+
+// Return early when we don't want to expose all translations
+if (config.expose_all_translations === false) {
+	alchemy.exposeStatic('i18n_expose_all', false);
+	return;
+}
 
 // Expose the translations to the client
 alchemy.hawkejs.on({type: 'viewrender', status: 'begin', client: false}, function onBegin(viewRender) {

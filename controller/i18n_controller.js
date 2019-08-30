@@ -17,17 +17,39 @@ var I18n = Function.inherits('Alchemy.Controller.App', function I18n(conduit, op
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.5.0
+ * @version  0.6.0
  *
  * @param    {Conduit}   conduit
  * @param    {String}    domain
  * @param    {String}    key
  */
-I18n.setAction(function translation(conduit, domain, key) {
+I18n.setAction(async function translation(conduit, domain, key) {
 
-	var I18n = this.getModel('I18n');
+	// Get the translation model (probably I18n unless overriden)
+	var model = this.getModel(alchemy.plugins.i18n.model);
 
-	I18n.getTranslation(domain, key, function gotTranslation(err, item) {
-		conduit.end(item);
-	});
+	let translation = await model.getTranslation(domain, key);
+
+	conduit.end(translation);
+});
+
+/**
+ * Get the wanted translatable string
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.6.0
+ * @version  0.6.0
+ *
+ * @param    {Conduit}   conduit
+ * @param    {String}    domain
+ * @param    {String}    key
+ */
+I18n.setAction(async function string(conduit, domain, key) {
+
+	// Get the translation model (probably I18n unless overriden)
+	var model = this.getModel(alchemy.plugins.i18n.model);
+
+	let translation = await model.getTranslatedString(domain, key, conduit.locales);
+
+	conduit.end(translation);
 });

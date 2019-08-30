@@ -1,3 +1,8 @@
+// Don't load this model if a custom model is used
+if (alchemy.plugins.i18n.custom_model) {
+	return;
+}
+
 /**
  * I18n model
  *
@@ -87,20 +92,23 @@ I18n.setProperty(function sort() {
 });
 
 /**
- * Get a translation
+ * Get a translation record
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.2.0
- * @version  1.0.0
+ * @version  0.5.0
  *
  * @param    {String}     domain     The domain/scope/category of the wanted key
  * @param    {String}     key        The key of the translation to get
  * @param    {Array}      locales    The locales to get
  * @param    {Function}   callback   Function to callback with the result
+ *
+ * @return   {Pledge}
  */
 I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 
-	var options;
+	var options,
+	    pledge = new Classes.Pledge();
 
 	if (typeof key === 'function') {
 		callback = key;
@@ -113,9 +121,7 @@ I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 		locales = null;
 	}
 
-	if (typeof callback != 'function') {
-		throw new Error('I18n#getTranslation requires a callback');
-	}
+	pledge.done(callback);
 
 	options = {
 		conditions: {
@@ -129,13 +135,56 @@ I18n.setMethod(function getTranslation(domain, key, locales, callback) {
 	this.find('first', options, function gotResult(err, item) {
 
 		if (err != null) {
-			return callback(err);
+			return pledge.reject(err);
 		}
 
 		if (!item) {
-			return callback(null, item);
+			return pledge.resolve();
 		}
 
-		callback(null, item);
+		return pledge.resolve(item);
 	});
+
+	return pledge;
+});
+
+/**
+ * Get translated string
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    0.2.0
+ * @version  0.5.0
+ *
+ * @param    {String}     domain     The domain/scope/category of the wanted key
+ * @param    {String}     key        The key of the translation to get
+ * @param    {Array}      locales    The locales to get
+ * @param    {Object}     params     Optional parameters for the translation
+ *
+ * @return   {Pledge}
+ */
+I18n.setMethod(async function getTranslatedString(domain, key, locales, params) {
+
+	let item = await this.getTranslation(domain, key, locales);
+
+	if (!item) {
+		return;
+	}
+
+	let source;
+
+	if (params) {
+		if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
+			source = item.plural_translation;
+		} else {
+			source = item.singular_translation;
+		}
+	} else {
+		source = item.singular_translation;
+	}
+
+	if (source && params) {
+		return source.assign(params);
+	}
+
+	return source;
 });

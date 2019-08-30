@@ -23,6 +23,19 @@ var I18n = Blast.Bound.Function.inherits('Alchemy.Base', function I18n(domain, k
 });
 
 /**
+ * The LRU cache
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.6.0
+ * @version  0.6.0
+ *
+ * @return   {Object}
+ */
+I18n.setStatic('cache', new Classes.Develry.Cache({
+	length : 100,
+}));
+
+/**
  * The parameters
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
@@ -200,82 +213,122 @@ I18n.setMethod(function getContent(next) {
  *
  * @return   {Pledge}
  */
-I18n.setMethod(function renderHawkejsContent(renderer) {
+I18n.setMethod(async function renderHawkejsContent(renderer) {
 
 	var that = this,
-	    translations,
-	    translation,
 	    params,
 	    source,
-	    pledge = new Classes.Pledge();
+	    cache_key;
+
+	if (this.domain) {
+		cache_key = this.domain;
+	} else {
+		cache_key = 'default';
+	}
+
+	cache_key += '.' + this.key;
 
 	params = this.parameters;
 
 	if (Blast.isNode) {
 
-		let locales = this.options.locales;
+		let locales = this.options.locales,
+		    result,
+		    model = Model.get(alchemy.plugins.i18n.model),
+		    error;
 
 		if ((!locales || locales.length == 0) && renderer) {
 			locales = renderer.internal('locales');
 		}
 
-		Model.get('I18n').getTranslation(this.domain, this.key, locales, function gotTranslation(err, item) {
+		try {
+			result = await model.getTranslatedString(this.domain, this.key, locales, params);
+		} catch (err) {
+			error = err;
+		}
 
-			// If no items are found in the database, use the given key
-			if (err || !item) {
-				source = that.options.fallback || that.key;
-			} else {
-				if (params) {
-					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && item.plural_translation) {
-						source = item.plural_translation;
-					} else {
-						source = item.singular_translation;
-					}
-				} else {
-					source = item.singular_translation;
-				}
-			}
+		// If no items are found in the database, use the given key
+		if (error || !result) {
+			result = that.options.fallback || that.key;
+		}
 
-			if (params) {
-				that.result = source.assign(params);
-			} else {
-				that.result = source;
-			}
+		if (params) {
+			result = result.assign(params);
+		}
 
-			that.prepareResult(false);
-			pledge.resolve(that[Hawkejs.RESULT]);
-		});
+		that.result = result;
+
+		that.prepareResult(false);
+
 	} else {
-		translations = this.view.expose('i18n_translations') || {};
-		translation = translations[this.domain];
+		let has_exposed = this.view.expose('i18n_expose_all');
 
-		if (!translation || !translation[this.key]) {
+		if (has_exposed !== false) {
+			let translations = this.view.expose('i18n_translations') || {},
+			    translation = translations[this.domain];
 
-			if (params) {
-				this.result = (this.options.fallback || this.key).assign(params);
+			if (!translation || !translation[this.key]) {
+
+				if (params) {
+					this.result = (this.options.fallback || this.key).assign(params);
+				}
+			} else {
+
+				translation = translation[this.key];
+
+				if (params) {
+					if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && translation.plural) {
+						source = translation.plural;
+					} else {
+						source = translation.singular;
+					}
+
+					that.result = source.assign(params);
+				} else {
+					that.result = translation.singular;
+				}
 			}
 		} else {
+			// Need to get the translation from the server
+			let source = I18n.cache.get(cache_key);
 
-			translation = translation[this.key];
+			if (!source) {
+				source = alchemy.fetch('I18n#string', {
+					parameters: {
+						domain : this.domain || 'default',
+						key    : this.key
+					}
+				});
 
-			if (params) {
-				if (typeof params[0] == 'number' && (params[0] > 1 || params[0] == 0) && translation.plural) {
-					source = translation.plural;
-				} else {
-					source = translation.singular;
-				}
+				// Set the promise already
+				I18n.cache.set(cache_key, source);
 
-				that.result = source.assign(params);
-			} else {
-				that.result = translation.singular;
+				source = await source;
+
+				// Set the result now too
+				I18n.cache.set(cache_key, source);
 			}
+
+			if (source && typeof source.then == 'function') {
+				source = await source;
+			}
+
+			if (source && params) {
+				source = source.assign(params);
+			}
+
+			if (source) {
+				this.result = source;
+			} else {
+				this.result = this.options.fallback || this.key;
+			}
+
 		}
 
 		this.prepareResult(false);
-		pledge.resolve(this[Hawkejs.RESULT]);
 	}
 
-	return pledge;
+	return this[Hawkejs.RESULT];
 });
 
 /**
