@@ -313,16 +313,15 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 				source = await source;
 			}
 
-			if (source && params) {
+			if (!source) {
+				source = this.options.fallback || this.key;
+			}
+
+			if (params) {
 				source = source.assign(params);
 			}
 
-			if (source) {
-				this.result = source;
-			} else {
-				this.result = this.options.fallback || this.key;
-			}
-
+			this.result = source;
 		}
 
 		this.prepareResult(false);
