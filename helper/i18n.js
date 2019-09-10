@@ -141,7 +141,7 @@ I18n.setStatic(async function getTranslation(domain, key, parameters) {
 	}
 
 	if (!source) {
-		return '';
+		source = key;
 	}
 
 	let result;
@@ -677,7 +677,11 @@ XI18n.setMethod(function introduced() {
 		}
 
 		promise.then(function gotTranslation(result) {
-			that.innerHTML = result;
+
+			if (result) {
+				that.innerHTML = result;
+			}
+
 			that.fallback = false;
 		});
 	}
