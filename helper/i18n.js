@@ -98,6 +98,64 @@ I18n.setStatic(function unDry(obj) {
 });
 
 /**
+ * Get a translation
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.6.0
+ * @version  0.6.0
+ */
+I18n.setStatic(async function getTranslation(domain, key, parameters) {
+
+	let cache_key;
+
+	if (domain) {
+		cache_key = domain;
+	} else {
+		cache_key = 'default';
+	}
+
+	cache_key += '.' + key;
+
+	// Need to get the translation from the server
+	let source = I18n.cache.get(cache_key);
+
+	if (!source) {
+		source = alchemy.fetch('I18n#string', {
+			parameters: {
+				domain : domain || 'default',
+				key    : key
+			}
+		});
+
+		// Set the promise already
+		I18n.cache.set(cache_key, source);
+
+		source = await source;
+
+		// Set the result now too
+		I18n.cache.set(cache_key, source);
+	}
+
+	if (source && typeof source.then == 'function') {
+		source = await source;
+	}
+
+	if (!source) {
+		return '';
+	}
+
+	let result;
+
+	if (parameters) {
+		result = source.assign(parameters);
+	} else {
+		result = source;
+	}
+
+	return result;
+});
+
+/**
  * Add a suffix
  *
  * @author   Jelle De Loecker <jelle@develry.be>
@@ -330,6 +388,8 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 	return this[Hawkejs.RESULT];
 });
 
+
+
 /**
  * Return the result (for Hawkejs)
  *
@@ -354,6 +414,7 @@ I18n.setMethod(function toHawkejsString(view) {
 I18n.setMethod(function prepareResult(fetch_content) {
 
 	var has_params,
+	    fallback,
 	    element,
 	    result,
 	    suffix,
@@ -374,6 +435,7 @@ I18n.setMethod(function prepareResult(fetch_content) {
 	if (this.result) {
 		result = this.result;
 	} else {
+		fallback = true;
 		result = this.options.fallback || this.key;
 
 		if (has_params) {
@@ -398,6 +460,11 @@ I18n.setMethod(function prepareResult(fetch_content) {
 		element.dataset.domain = this.domain;
 		element.dataset.key = this.key;
 		element.innerHTML = result;
+		element.parameters = this.parameters;
+
+		if (fallback) {
+			element.fallback = true;
+		}
 
 		if (suffix) {
 			element.innerHTML += suffix;
@@ -408,6 +475,20 @@ I18n.setMethod(function prepareResult(fetch_content) {
 
 	this[Classes.Hawkejs.RESULT] = result;
 
+	return result;
+});
+
+/**
+ * Return the element or string result
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.6.0
+ * @version  0.6.0
+ *
+ * @return   {HTMLElement|String}
+ */
+I18n.setMethod(function toElement() {
+	var result = this.prepareResult();
 	return result;
 });
 
@@ -519,4 +600,86 @@ Hawkejs.Renderer.setCommand(function __d(domain, key, parameters) {
 	translation.view = this;
 
 	return translation;
+});
+
+/**
+ * The X-I18n custom element
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+var XI18n = Function.inherits('Alchemy.Element', function XI18n() {
+	XI18n.super.call(this);
+});
+
+/**
+ * The parameters to use for the translation
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+XI18n.setAssignedProperty('parameters');
+
+/**
+ * Did we fallback to the key?
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+XI18n.setAttribute('fallback', {boolean: true});
+
+/**
+ * The domain of the translation
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+XI18n.setAttribute('domain');
+
+/**
+ * The key of the translation
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+XI18n.setAttribute('key');
+
+/**
+ * Actions to perform when this element
+ * has been added to the DOM for the first time
+ *
+ * @author   Jelle De Loecker   <jelle@develry.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+XI18n.setMethod(function introduced() {
+
+	if (this.fallback) {
+
+		let domain = this.domain || this.dataset.domain,
+		    key = this.key || this.dataset.key;
+
+		if (!key) {
+			return;
+		}
+
+		const that = this;
+
+		let promise = I18n.getTranslation(domain, key, this.parameters);
+
+		if (!promise) {
+			return;
+		}
+
+		promise.then(function gotTranslation(result) {
+			that.innerHTML = result;
+			that.fallback = false;
+		});
+	}
+
 });
