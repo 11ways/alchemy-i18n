@@ -40,14 +40,14 @@ global.__ = function __(domain, key, parameters) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.5.0
- * @version  0.5.0
+ * @version  0.6.0
  *
  * @return   {I18n}
  */
 Classes.Alchemy.Base.setMethod(function __(domain, key, parameters) {
 
 	if (this.conduit) {
-		return this.conduit.viewRender.__(domain, key, parameters);
+		return this.conduit.renderer.__(domain, key, parameters);
 	}
 
 	return new Classes.Alchemy.I18n(domain, key, options);
@@ -58,14 +58,14 @@ Classes.Alchemy.Base.setMethod(function __(domain, key, parameters) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.5.0
- * @version  0.5.0
+ * @version  0.6.0
  *
  * @return   {I18n}
  */
 Classes.Alchemy.Base.setMethod(function __d(domain, key, parameters) {
 
 	if (this.conduit) {
-		return this.conduit.viewRender.__d(domain, key, parameters);
+		return this.conduit.renderer.__d(domain, key, parameters);
 	}
 
 	return new Classes.Alchemy.I18n(domain, key, options);
