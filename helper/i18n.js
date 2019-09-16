@@ -257,7 +257,13 @@ I18n.setMethod(function getDirect() {
  * @return   {Pledge}
  */
 I18n.setMethod(function getContent(next) {
-	return this.renderHawkejsContent().done(next);
+	let pledge = this.renderHawkejsContent();
+
+	if (pledge && pledge.done) {
+		return pledge.done(next);
+	}
+
+	return;
 });
 
 /**
