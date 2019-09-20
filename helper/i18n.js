@@ -20,6 +20,7 @@ var I18n = Blast.Bound.Function.inherits('Alchemy.Base', function I18n(domain, k
 	this.key = key;
 	this.options = options;
 	this.suffixes = [];
+	this.prefixes = [];
 });
 
 /**
@@ -156,6 +157,19 @@ I18n.setStatic(async function getTranslation(domain, key, parameters) {
 });
 
 /**
+ * Add a prefix
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    0.6.0
+ * @version  0.6.0
+ *
+ * @param    {String}   prefix
+ */
+I18n.setMethod(function prepend(prefix) {
+	this.prefixes.push(prefix);
+});
+
+/**
  * Add a suffix
  *
  * @author   Jelle De Loecker <jelle@develry.be>
@@ -173,7 +187,7 @@ I18n.setMethod(function concat(suffix) {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.3.0
- * @version  0.4.0
+ * @version  0.6.0
  *
  * @param    {WeakMap}   wm
  *
@@ -185,6 +199,9 @@ I18n.setMethod(function dryClone(wm) {
 
 	// Create a new i18n instance
 	result = new this.constructor(this.domain, this.key, JSON.clone(this.options, wm));
+
+	// Clone the prefixes
+	result.prefixes = JSON.clone(this.prefixes);
 
 	// Clone the suffixes too
 	result.suffixes = JSON.clone(this.suffixes);
@@ -218,7 +235,7 @@ I18n.setMethod(function toHawkejs(wm, viewrender) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.4.1
+ * @version  0.6.0
  *
  * @return   {Object}
  */
@@ -228,6 +245,7 @@ I18n.setMethod(function toDry() {
 			domain   : this.domain,
 			key      : this.key,
 			options  : this.options,
+			prefixes : this.prefixes,
 			suffixes : this.suffixes
 		},
 		path: '__Protoblast.Classes.Alchemy.I18n'
@@ -253,17 +271,15 @@ I18n.setMethod(function getDirect() {
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
  * @version  0.5.1
- *
- * @return   {Pledge}
  */
 I18n.setMethod(function getContent(next) {
-	let pledge = this.renderHawkejsContent();
+	let promise = this.renderHawkejsContent();
 
-	if (pledge && pledge.done) {
-		return pledge.done(next);
+	if (next) {
+		Hawkejs.doNext(promise, next);
 	}
 
-	return;
+	return promise;
 });
 
 /**
@@ -423,6 +439,7 @@ I18n.setMethod(function prepareResult(fetch_content) {
 	    fallback,
 	    element,
 	    result,
+	    prefix,
 	    suffix,
 	    i;
 
@@ -454,13 +471,18 @@ I18n.setMethod(function prepareResult(fetch_content) {
 		result = result.stripTags();
 	}
 
+	prefix = '';
+	for (i = 0; i < this.prefixes.length; i++) {
+		prefix += this.prefixes[i];
+	}
+
 	suffix = '';
 	for (i = 0; i < this.suffixes.length; i++) {
 		suffix += this.suffixes[i];
 	}
 
 	if (this.options.wrap === false) {
-		result = result + suffix;
+		result = prefix + result + suffix;
 	} else {
 		element = Hawkejs.Hawkejs.createElement('x-i18n');
 		element.dataset.domain = this.domain;
@@ -472,8 +494,8 @@ I18n.setMethod(function prepareResult(fetch_content) {
 			element.fallback = true;
 		}
 
-		if (suffix) {
-			element.innerHTML += suffix;
+		if (prefix || suffix) {
+			element.innerHTML = prefix + element.innerHTML + suffix;
 		}
 
 		result = element;
