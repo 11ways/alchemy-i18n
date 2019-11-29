@@ -332,7 +332,7 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 			result = that.options.fallback || that.key;
 		}
 
-		if (params) {
+		if (params && result) {
 			result = result.assign(params);
 		}
 
@@ -350,7 +350,7 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 			if (!translation || !translation[this.key]) {
 
 				if (params) {
-					this.result = (this.options.fallback || this.key).assign(params);
+					this.result = (this.options.fallback || this.key || '').assign(params);
 				}
 			} else {
 
@@ -363,7 +363,9 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 						source = translation.singular;
 					}
 
-					that.result = source.assign(params);
+					if (source) {
+						that.result = source.assign(params);
+					}
 				} else {
 					that.result = translation.singular;
 				}
@@ -461,7 +463,7 @@ I18n.setMethod(function prepareResult(fetch_content) {
 		fallback = true;
 		result = this.options.fallback || this.key;
 
-		if (has_params) {
+		if (has_params && result) {
 			result = result.assign(this.parameters);
 		}
 	}
