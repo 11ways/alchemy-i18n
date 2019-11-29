@@ -147,7 +147,7 @@ I18n.setStatic(async function getTranslation(domain, key, parameters) {
 
 	let result;
 
-	if (parameters) {
+	if (parameters && source) {
 		result = source.assign(parameters);
 	} else {
 		result = source;
@@ -397,7 +397,7 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 				source = this.options.fallback || this.key;
 			}
 
-			if (params) {
+			if (params && source) {
 				source = source.assign(params);
 			}
 
