@@ -120,25 +120,30 @@ I18n.setStatic(async function getTranslation(domain, key, parameters) {
 	// Need to get the translation from the server
 	let source = I18n.cache.get(cache_key);
 
-	if (!source) {
-		source = alchemy.fetch('I18n#string', {
-			parameters: {
-				domain : domain || 'default',
-				key    : key
-			}
-		});
+	try {
 
-		// Set the promise already
-		I18n.cache.set(cache_key, source);
+		if (!source) {
+			source = alchemy.fetch('I18n#string', {
+				parameters: {
+					domain : domain || 'default',
+					key    : key
+				}
+			});
 
-		source = await source;
+			// Set the promise already
+			I18n.cache.set(cache_key, source);
 
-		// Set the result now too
-		I18n.cache.set(cache_key, source);
-	}
+			source = await source;
 
-	if (source && typeof source.then == 'function') {
-		source = await source;
+			// Set the result now too
+			I18n.cache.set(cache_key, source);
+		}
+
+		if (source && typeof source.then == 'function') {
+			source = await source;
+		}
+	} catch (err) {
+		source = null;
 	}
 
 	if (!source) {
@@ -374,25 +379,30 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 			// Need to get the translation from the server
 			let source = I18n.cache.get(cache_key);
 
-			if (!source) {
-				source = alchemy.fetch('I18n#string', {
-					parameters: {
-						domain : this.domain || 'default',
-						key    : this.key
-					}
-				});
+			try {
 
-				// Set the promise already
-				I18n.cache.set(cache_key, source);
+				if (!source) {
+					source = alchemy.fetch('I18n#string', {
+						parameters: {
+							domain : this.domain || 'default',
+							key    : this.key
+						}
+					});
 
-				source = await source;
+					// Set the promise already
+					I18n.cache.set(cache_key, source);
 
-				// Set the result now too
-				I18n.cache.set(cache_key, source);
-			}
+					source = await source;
 
-			if (source && typeof source.then == 'function') {
-				source = await source;
+					// Set the result now too
+					I18n.cache.set(cache_key, source);
+				}
+
+				if (source && typeof source.then == 'function') {
+					source = await source;
+				}
+			} catch (err) {
+				source = null;
 			}
 
 			if (!source) {
