@@ -502,7 +502,9 @@ I18n.setMethod(function prepareResult(fetch_content) {
 		element.innerHTML = result;
 		element.parameters = this.parameters;
 
-		if (fallback) {
+		// Annoyingly, this fallback is sometimes not checked because .result has
+		// already been set. Not doing that breaks certain usecases
+		if (fallback || result == this.key || result == this.options.fallback) {
 			element.fallback = true;
 		}
 
