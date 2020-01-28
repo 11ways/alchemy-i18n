@@ -506,6 +506,10 @@ I18n.setMethod(function prepareResult(fetch_content) {
 		// already been set. Not doing that breaks certain usecases
 		if (fallback || result == this.key || result == this.options.fallback) {
 			element.fallback = true;
+
+			if (this.options.fallback) {
+				element.dataset.fallback = this.options.fallback;
+			}
 		}
 
 		if (prefix || suffix) {
@@ -719,6 +723,14 @@ XI18n.setMethod(function introduced() {
 		}
 
 		promise.then(function gotTranslation(result) {
+
+			if (result == key) {
+				// It's still the same key
+
+				if (that.innerHTML && that.innerHTML != key) {
+					return;
+				}
+			}
 
 			if (result) {
 				that.innerHTML = result;
