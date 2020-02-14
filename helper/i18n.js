@@ -348,7 +348,7 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 	} else {
 		let has_exposed = this.view.expose('i18n_expose_all');
 
-		if (has_exposed !== false) {
+		if (has_exposed) {
 			let translations = this.view.expose('i18n_translations') || {},
 			    translation = translations[this.domain];
 
