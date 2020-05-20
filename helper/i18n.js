@@ -337,6 +337,10 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 			result = that.options.fallback || that.key;
 		}
 
+		if (result && typeof result != 'string') {
+			result = String(result);
+		}
+
 		if (params && result) {
 			result = result.assign(params);
 		}
