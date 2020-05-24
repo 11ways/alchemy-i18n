@@ -413,6 +413,10 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 				source = this.options.fallback || this.key;
 			}
 
+			if (source && typeof source != 'string') {
+				source = String(source);
+			}
+
 			if (params && source) {
 				source = source.assign(params);
 			}
