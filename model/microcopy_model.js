@@ -26,17 +26,8 @@ Microcopy.constitute(function addFields() {
 	// The language this translation is for
 	this.addField('language', 'String');
 
-	// Extra flags
-	this.addField('flags', 'String', {array: true});
-
 	// The actual translation
 	this.addField('translation', 'Text');
-
-	// Optional domain for this translation
-	this.addField('domain', 'String');
-
-	// Preferred fallback domain to use
-	this.addField('fallback_domain', 'String');
 
 	let filters = new Classes.Alchemy.Schema(this);
 
@@ -70,18 +61,13 @@ Microcopy.constitute(function chimeraConfig() {
 
 	list.addField('key');
 	list.addField('language');
-	list.addField('flags');
 	list.addField('translation');
-	list.addField('domain');
 
 	// Get the edit group
 	edit = this.chimera.getActionFields('edit');
 
 	edit.addField('key');
 	edit.addField('language');
-	edit.addField('flags');
 	edit.addField('translation');
-	edit.addField('domain');
-	edit.addField('fallback_domain');
 	edit.addField('filters');
 });
