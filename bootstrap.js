@@ -9,6 +9,25 @@ Router.get('I18n#string', '/i18n/{domain}/{key}/string', 'I18n#string');
 Router.get('I18n', '/i18n/{domain}/{key}', 'I18n#translation');
 
 /**
+ * Find microcopy records for the client side
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ */
+Router.get('Microcopy#findRecords', '/api/microcopy/{key}', async function findRecords(conduit, key) {
+
+	let Microcopy = conduit.getModel('Microcopy');
+
+	let parameters = conduit.param('parameters');
+	let locales = conduit.param('locales');
+
+	let records = await Microcopy.findRecords(key, parameters, locales);
+
+	conduit.end(records);
+});
+
+/**
  * Create an i18n string
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
