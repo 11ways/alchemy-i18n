@@ -258,3 +258,52 @@ Hawkejs.Renderer.setCommand(function t(key, parameters) {
 
 	return microcopy;
 });
+
+/**
+ * The "translate" expression, inherited from "Print"
+ * For example: {%t "hello" parameter="value" %}
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ */
+const Translate = Hawkejs.Expression.getClass('Print', 'Translate');
+
+/**
+ * Do the given pieces match this expression?
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ *
+ * @param    {Object}
+ *
+ * @return   {Boolean}
+ */
+Translate.setStatic(function matches(options) {
+	return (options.type == 't' || options.type == 'translate');
+});
+
+/**
+ * Parse the given line if it matches
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ */
+Translate.setMethod(function execute() {
+
+	// Get the arguments
+	let params,
+	    args = this.getTokenValuesArray(this.options, this.vars),
+	    key;
+
+	key = args[0];
+	params = args[1];
+
+	let value = this.view.t(key, params);
+
+	if (value != null) {
+		this.view.print(value);
+	}
+});
