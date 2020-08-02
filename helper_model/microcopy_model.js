@@ -1,4 +1,11 @@
 const Microcopy = Classes.Hawkejs.Model.getClass('Microcopy');
+let copy_cache;
+
+if (Blast.isNode && alchemy.plugins.i18n.translation_server) {
+	copy_cache = alchemy.getCache('remote_i18n_microcopy', {
+		max_age : '2 hours'
+	});
+}
 
 /**
  * Find records for the given parameters
@@ -11,7 +18,7 @@ const Microcopy = Classes.Hawkejs.Model.getClass('Microcopy');
  * @param    {String}         key
  * @param    {Object|Array}   parameters
  *
- * @return   {Promise<Alchemy.Document.Microcopy>}
+ * @return   {Promise<Array>}
  */
 Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 
@@ -41,7 +48,10 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 
 	let crit = this.find();
 	crit.where('key', key);
-	crit.where('language').in(locales);
+
+	if (locales && locales.length) {
+		crit.where('language').in(locales);
+	}
 
 	let or = crit.or();
 
@@ -64,6 +74,40 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 	}
 
 	let records = await this.find('all', crit);
+	records = Array.cast(records);
+
+	if (!records.length && alchemy.plugins.i18n.translation_server) {
+
+		let cache_id = Object.checksum([key, parameters, locales]);
+
+		let cached = copy_cache.get(cache_id);
+
+		if (cached == null) {
+
+			let url = alchemy.plugins.i18n.translation_server.assign({key: key});
+			url = RURL.parse(url);
+
+			if (parameters) {
+				url.param('parameters', parameters);
+			}
+
+			if (locales) {
+				url.param('locales', locales);
+			}
+
+			let remote_records = await Blast.fetch(url);
+
+			if (remote_records && remote_records.length) {
+				cached = JSON.undry(remote_records);
+			}
+
+			copy_cache.set(cache_id, cached || false);
+		}
+
+		if (cached && cached.length) {
+			records.include(cached);
+		}
+	}
 
 	return records;
 });
@@ -93,6 +137,11 @@ Microcopy.setMethod(async function findTranslation(key, parameters, locales) {
 		parameter_count = Object.size(parameters);
 		keys = Object.keys(parameters);
 		keys.sort();
+	}
+
+	// @TODO: better fallback?
+	if (!locales || !locales.length) {
+		locales = Object.keys(Prefix.all());
 	}
 
 	let records = await this.findRecords(key, keys, locales);
