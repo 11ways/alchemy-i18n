@@ -9,6 +9,11 @@
  * @param    {Object}  parameters  The parameters for the translation
  */
 const Microcopy = Blast.Bound.Function.inherits('Alchemy.Base', function Microcopy(key, parameters) {
+
+	if (this == null || !(this instanceof Microcopy)) {
+		return new Microcopy(key, parameters);
+	}
+
 	this.key = key;
 	this.parameters = parameters;
 	this.record = null;
@@ -104,7 +109,13 @@ Microcopy.setMethod(function getLocales() {
 
 	if (this.renderer) {
 		result = this.renderer.internal('locales');
-	} else {
+	}
+
+	if (!result && Blast.isBrowser && typeof hawkejs != 'undefined') {
+		result = hawkejs.scene.exposed.locales;
+	}
+
+	if (!result || !result.length) {
 		result = ['en'];
 	}
 
@@ -237,6 +248,22 @@ Microcopy.setMethod(function prepareResult() {
 	// @TODO: parameters & propper html handling
 
 	this[Hawkejs.RESULT] = element;
+
+	return element;
+});
+
+/**
+ * Get an element
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ */
+Microcopy.setMethod(function toElement() {
+
+	let element = this.renderer.createElement('micro-copy');
+	element.key = this.key;
+	element.parameters = this.parameters;
 
 	return element;
 });

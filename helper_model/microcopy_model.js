@@ -76,7 +76,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 	let records = await this.find('all', crit);
 	records = Array.cast(records);
 
-	if (!records.length && alchemy.plugins.i18n.translation_server) {
+	if (!records.length && alchemy.plugins.i18n.translation_server && alchemy.plugins.i18n.access_key) {
 
 		let cache_id = Object.checksum([key, parameters, locales]);
 
@@ -95,7 +95,14 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 				url.param('locales', locales);
 			}
 
-			let remote_records = await Blast.fetch(url);
+			let fetch_options = {
+				url     : url,
+				headers : {
+					'access-key': alchemy.plugins.i18n.access_key,
+				}
+			};
+
+			let remote_records = await Blast.fetch(fetch_options);
 
 			if (remote_records && remote_records.length) {
 				cached = JSON.undry(remote_records);

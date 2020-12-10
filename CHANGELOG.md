@@ -1,3 +1,10 @@
+## 0.7.0 (2020-12-10)
+
+* Add microcopy helpers & logic
+* Add hawkejs translate expression
+* Add support for remote translation servers
+* Add micro-copy element
+
 ## 0.6.0 (2020-07-21)
 
 * Make compatible with Alchemy v1.1.0

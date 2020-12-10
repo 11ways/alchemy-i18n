@@ -17,6 +17,10 @@ Router.get('I18n', '/i18n/{domain}/{key}', 'I18n#translation');
  */
 Router.get('Microcopy#findRecords', '/api/microcopy/{key}', async function findRecords(conduit, key) {
 
+	if (config.wanted_key && !conduit.headers.referer && conduit.headers['access-key'] != config.wanted_key) {
+		return conduit.end();
+	}
+
 	let Microcopy = conduit.getModel('Microcopy');
 
 	let parameters = conduit.param('parameters');
