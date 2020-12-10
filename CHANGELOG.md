@@ -1,4 +1,4 @@
-## 0.7.0 (2020-12-10)
+## 0.6.1 (2020-12-10)
 
 * Add microcopy helpers & logic
 * Add hawkejs translate expression
