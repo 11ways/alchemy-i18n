@@ -1,3 +1,7 @@
+## 0.6.2 (2021-09-12)
+
+* Fix infinite-loop issue with some microcopy translations
+
 ## 0.6.1 (2020-12-10)
 
 * Add microcopy helpers & logic

@@ -35,9 +35,6 @@ MCEl.setAssignedProperty('parameters');
  * @version  0.6.1
  */
 MCEl.setMethod(function retained() {
-
-	console.log('This', this, 'is being retained');
-
 	this.ensureContent();
 });
 

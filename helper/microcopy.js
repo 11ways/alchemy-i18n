@@ -165,13 +165,19 @@ Microcopy.setMethod(async function findTranslation() {
 
 	if (!this.record) {
 		let Microcopy = this.getModel('Microcopy'),
-		    locales = this.getLocales();
+		    locales = this.getLocales(),
+		    pledge = new Pledge();
 
 		let promise = Microcopy.findTranslation(this.key, this.parameters, locales);
 
-		this.record = promise;
+		this.record = pledge;
 
 		let translation = await promise;
+
+		// Make sure these are Client documents
+		translation = JSON.clone(translation, 'toHawkejs');
+
+		pledge.resolve(translation);
 
 		this.record = translation || false;
 	}
@@ -269,6 +275,17 @@ Microcopy.setMethod(function toElement() {
 });
 
 /**
+ * Get the attribute value
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.1
+ * @version  0.6.1
+ */
+Microcopy.setMethod(function toAttributeValue() {
+	return this.rendered;
+});
+
+/**
  * Create a microcopy translation from inside a template
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -329,6 +346,10 @@ Translate.setMethod(function execute() {
 	params = args[1];
 
 	let value = this.view.t(key, params);
+
+	if (this.view.state == 'PE') {
+		return value;
+	}
 
 	if (value != null) {
 		this.view.print(value);
