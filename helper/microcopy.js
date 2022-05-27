@@ -333,7 +333,7 @@ Translate.setStatic(function matches(options) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.3
  */
 Translate.setMethod(function execute() {
 
@@ -344,6 +344,10 @@ Translate.setMethod(function execute() {
 
 	key = args[0];
 	params = args[1];
+
+	if (!key) {
+		return;
+	}
 
 	let value = this.view.t(key, params);
 
