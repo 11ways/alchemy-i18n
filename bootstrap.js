@@ -63,7 +63,7 @@ global.__ = function __(domain, key, parameters) {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.5.0
- * @version  0.6.0
+ * @version  0.6.3
  *
  * @return   {I18n}
  */
@@ -73,7 +73,7 @@ Classes.Alchemy.Base.setMethod(function __(domain, key, parameters) {
 		return this.conduit.renderer.__(domain, key, parameters);
 	}
 
-	return new Classes.Alchemy.I18n(domain, key, options);
+	return new Classes.Alchemy.I18n(domain, key, parameters);
 });
 
 /**
