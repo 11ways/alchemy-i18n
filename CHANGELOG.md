@@ -1,5 +1,7 @@
 ## 0.6.3 (WIP)
 
+* Make sure weights are applied after fetching microcopy records
+
 ## 0.6.2 (2021-09-12)
 
 * Fix infinite-loop issue with some microcopy translations

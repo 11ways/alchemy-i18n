@@ -13,7 +13,7 @@ if (Blast.isNode && alchemy.plugins.i18n.translation_server) {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.3
  *
  * @param    {String}         key
  * @param    {Object|Array}   parameters
@@ -40,6 +40,10 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 				locales     : locales,
 			}
 		});
+
+		if (records) {
+			records.sortByPath(-1, 'weight');
+		}
 
 		return records;
 	}
@@ -114,6 +118,10 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 		if (cached && cached.length) {
 			records.include(cached);
 		}
+	}
+
+	if (records) {
+		records.sortByPath(-1, 'weight');
 	}
 
 	return records;
