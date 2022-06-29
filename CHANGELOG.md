@@ -1,4 +1,4 @@
-## 0.6.3 (WIP)
+## 0.6.3 (2022-06-29)
 
 * Make sure weights are applied after fetching microcopy records
 * Do not create a microcopy with an empty key
