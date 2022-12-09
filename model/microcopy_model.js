@@ -7,16 +7,14 @@
  * @since    0.6.0
  * @version  0.6.0
  */
-var Microcopy = Function.inherits('Alchemy.Model.App', function Microcopy(options) {
-	Microcopy.super.call(this, options);
-});
+const Microcopy = Function.inherits('Alchemy.Model.App', 'Microcopy');
 
 /**
  * Constitute the class wide schema
  *
- * @author   Jelle De Loecker <jelle@develry.be>
+ * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.6.0
- * @version  0.6.1
+ * @version  0.6.4
  */
 Microcopy.constitute(function addFields() {
 
@@ -49,6 +47,12 @@ Microcopy.constitute(function addFields() {
 	// The optional weight of this translation
 	// (In case there are multiple matches)
 	this.addField('weight', 'Number');
+
+	// Does this translation contain code?
+	this.addField('contains_code', 'Boolean');
+
+	// Does this translation contain something that needs to be encoded for HTML?
+	this.addField('contains_html', 'Boolean');
 });
 
 /**
@@ -83,4 +87,51 @@ Microcopy.constitute(function chimeraConfig() {
 	edit.addField('lock_case');
 	edit.addField('weight');
 	edit.addField('filters');
+});
+
+/**
+ * Re-save all records in the database
+ * without updating the 'updated' field
+ *
+ * @author   Jelle De Loecker <jelle@elevenways.be>
+ * @since    0.6.4
+ * @version  0.6.4
+ */
+Microcopy.setMethod(function touchAll(callback) {
+	return this.eachRecord(function touch(record, index, next) {
+		record.save(null, {set_updated: false}, function done(err) {
+			next(err);
+		});
+	}, callback);
+});
+
+/**
+ * Do something before saving
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.4
+ * @version  0.6.4
+ */
+Microcopy.setMethod(function beforeSave(document, options) {
+
+	let contains_code = false,
+	    contains_html = false,
+	    translation   = document.translation;
+
+	if (translation) {
+
+		if (translation.includes('<%') || translation.includes('{{') || translation.includes('{%')) {
+			contains_code = true;
+			contains_html = true;
+		} else {
+			let encoded = translation.encodeHTML();
+
+			if (encoded !== translation) {
+				contains_html = true;
+			}
+		}
+	}
+
+	document.contains_code = contains_code;
+	document.contains_html = contains_html;
 });

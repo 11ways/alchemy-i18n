@@ -1,3 +1,7 @@
+## 0.6.4 (WIP)
+
+* Check if a translation contains code & html before save
+
 ## 0.6.3 (2022-06-29)
 
 * Make sure weights are applied after fetching microcopy records
