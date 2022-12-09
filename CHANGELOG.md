@@ -1,6 +1,7 @@
 ## 0.6.4 (WIP)
 
 * Check if a translation contains code & html before save
+* Use subrenderers for nested translations so the locales don't get lost
 
 ## 0.6.3 (2022-06-29)
 

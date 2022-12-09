@@ -190,9 +190,9 @@ Microcopy.setMethod(async function findTranslation() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.4
  */
-Microcopy.setMethod(async function renderTranslation() {
+Microcopy.setMethod(function renderTranslation() {
 
 	if (!this.record) {
 		return;
@@ -204,19 +204,28 @@ Microcopy.setMethod(async function renderTranslation() {
 		hawkejs = window.hawkejs;
 	}
 
-	let that = this,
-	    fnc = hawkejs.compile(this.record.translation),
-	    pledge = new Classes.Pledge();
+	let parent_renderer = this.renderer,
+	    renderer;
+	
+	if (parent_renderer) {
+		renderer = parent_renderer.createSubRenderer();
+	}
 
-	hawkejs.render(fnc, this.parameters, function gotResult(err, result) {
+	if (!renderer) {
+		renderer = new Hawkejs.Renderer(hawkejs);
+	}
+
+	let fnc = hawkejs.compile(this.record.translation);
+	let pledge = new Pledge();
+
+	renderer.renderHTML(fnc, this.parameters).done((err, result) => {
 
 		if (err) {
-			return pledge.reject(err);
+			pledge.reject(err);
+		} else {
+			this.rendered = result;
+			pledge.resolve(result);
 		}
-
-		that.rendered = result;
-
-		pledge.resolve(result);
 	});
 
 	return pledge;
