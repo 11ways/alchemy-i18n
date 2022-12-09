@@ -198,6 +198,12 @@ Microcopy.setMethod(function renderTranslation() {
 		return;
 	}
 
+	// No need to do any expensive rendering if there is no code or HTML
+	if (this.record.contains_code === false && this.record.contains_html === false) {
+		this.rendered = this.record.translation;
+		return this.rendered;
+	}
+
 	let hawkejs = alchemy.hawkejs;
 
 	if (!hawkejs && Blast.isBrowser) {
