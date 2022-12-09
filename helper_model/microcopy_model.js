@@ -13,7 +13,7 @@ if (Blast.isNode && alchemy.plugins.i18n.translation_server) {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.6.1
- * @version  0.6.3
+ * @version  0.6.4
  *
  * @param    {String}         key
  * @param    {Object|Array}   parameters
@@ -106,7 +106,23 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 				}
 			};
 
-			let remote_records = await Blast.fetch(fetch_options);
+			let response = new Pledge();
+
+			Blast.fetch(fetch_options, (err, res) => {
+				if (err) {
+					response.reject(err);
+				} else {
+					response.resolve(res);
+				}
+			});
+
+			response = await response;
+
+			if (!response || (response.headers['content-type'] && response.headers['content-type'].indexOf('json') == -1)) {
+				throw new Error('The Microcopy response was not a JSON string');
+			}
+
+			let remote_records = response.body;
 
 			if (remote_records && remote_records.length) {
 				cached = JSON.undry(remote_records);

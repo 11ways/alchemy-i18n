@@ -3,6 +3,7 @@
 * Check if a translation contains code & html before save
 * Use subrenderers for nested translations so the locales don't get lost
 * Do not render translations when we're sure they don't contain code or html
+* Throw an error when a requested translation resource is not in the json format
 
 ## 0.6.3 (2022-06-29)
 
