@@ -1,4 +1,4 @@
-## 0.6.4 (WIP)
+## 0.6.4 (2022-12-23)
 
 * Check if a translation contains code & html before save
 * Use subrenderers for nested translations so the locales don't get lost

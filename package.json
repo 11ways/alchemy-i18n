@@ -1,7 +1,7 @@
 {
 	"name": "alchemy-i18n",
 	"description": "The internationalization plugin for the Alchemy MVC",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"author": "Jelle De Loecker <jelle@elevenways.be>",
 	"keywords": [
 		"alchemy",
@@ -15,6 +15,6 @@
 	"repository": "11ways/alchemy-i18n",
 	"license": "MIT",
 	"engines": {
-		"node" : ">=12.0.0"
+		"node" : ">=14.0.0"
 	}
 }
