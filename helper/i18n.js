@@ -81,7 +81,7 @@ I18n.setProperty(function view() {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.2.0
- * @version  0.2.0
+ * @version  0.6.5
  *
  * @return   {Object}
  */
@@ -93,7 +93,7 @@ I18n.setStatic(function unDry(obj) {
 	result = Object.create(I18n.prototype);
 
 	// Overwrite certain properties
-	Blast.Bound.Object.assign(result, obj);
+	Object.assign(result, obj);
 
 	return result;
 });

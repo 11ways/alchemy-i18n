@@ -1,7 +1,7 @@
 {
 	"name": "alchemy-i18n",
 	"description": "The internationalization plugin for the Alchemy MVC",
-	"version": "0.6.4",
+	"version": "0.6.5-alpha",
 	"author": "Jelle De Loecker <jelle@elevenways.be>",
 	"keywords": [
 		"alchemy",

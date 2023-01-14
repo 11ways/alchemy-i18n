@@ -1,3 +1,7 @@
+## 0.6.5 (WIP)
+
+* Fix incompatibility with protoblast v0.8.0
+
 ## 0.6.4 (2022-12-23)
 
 * Check if a translation contains code & html before save
