@@ -1,4 +1,4 @@
-## 0.6.5 (WIP)
+## 0.6.5 (2023-01-23)
 
 * Fix incompatibility with protoblast v0.8.0
 * Make translation api routes un-postponable
