@@ -5,8 +5,19 @@ const i18n_cache  = alchemy.shared('I18n.cache'),
 
 var code;
 
-Router.get('I18n#string', '/i18n/{domain}/{key}/string', 'I18n#string');
-Router.get('I18n', '/i18n/{domain}/{key}', 'I18n#translation');
+Router.add({
+	name             : 'I18n#string',
+	methods          : ['get'],
+	can_be_postponed : false,
+	paths            : '/i18n/{domain}/{key}/string',
+});
+
+Router.add({
+	name             : 'I18n#translation',
+	methods          : ['get'],
+	can_be_postponed : false,
+	paths            : '/i18n/{domain}/{key}',
+});
 
 /**
  * Find microcopy records for the client side

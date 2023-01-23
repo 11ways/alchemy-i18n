@@ -1,6 +1,7 @@
 ## 0.6.5 (WIP)
 
 * Fix incompatibility with protoblast v0.8.0
+* Make translation api routes un-postponable
 
 ## 0.6.4 (2022-12-23)
 
