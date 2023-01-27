@@ -348,14 +348,21 @@ Translate.setStatic(function matches(options) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.3
+ * @version  0.6.6
  */
 Translate.setMethod(function execute() {
 
 	// Get the arguments
 	let params,
-	    args = this.getTokenValuesArray(this.options, this.vars),
+	    args,
 	    key;
+	
+	try {
+		args = this.getTokenValuesArray(this.options, this.vars)
+	} catch (err) {
+		alchemy.distinctProblem('microcopy-args-error', 'Error getting Microcopy arguments', {error: err});
+		return;
+	}
 
 	key = args[0];
 	params = args[1];

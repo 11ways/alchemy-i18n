@@ -1,3 +1,7 @@
+## 0.6.6 (WIP)
+
+* Don't throw an error when a microcopy fails to parse its arguments
+
 ## 0.6.5 (2023-01-23)
 
 * Fix incompatibility with protoblast v0.8.0
