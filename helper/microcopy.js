@@ -242,7 +242,7 @@ Microcopy.setMethod(function renderTranslation() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.7
  */
 Microcopy.setMethod(function prepareResult() {
 
@@ -262,7 +262,7 @@ Microcopy.setMethod(function prepareResult() {
 		}
 	}
 
-	let element = this.renderer.createElement('micro-copy');
+	let element = this.createElement('micro-copy');
 	element.key = this.key;
 	element.innerHTML = rendered;
 
@@ -274,15 +274,31 @@ Microcopy.setMethod(function prepareResult() {
 });
 
 /**
+ * Create an element
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.7
+ * @version  0.6.7
+ */
+Microcopy.setMethod(function createElement(tag_name) {
+
+	if (this.renderer) {
+		return this.renderer.createElement(tag_name);
+	}
+
+	return Blast.Classes.Hawkejs.Hawkejs.createElement(tag_name);
+});
+
+/**
  * Get an element
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.7
  */
 Microcopy.setMethod(function toElement() {
 
-	let element = this.renderer.createElement('micro-copy');
+	let element = this.createElement('micro-copy');
 	element.key = this.key;
 	element.parameters = this.parameters;
 

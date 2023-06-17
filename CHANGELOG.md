@@ -1,3 +1,7 @@
+## 0.6.7 (WIP)
+
+* Fix microcopy instance not having a renderer context
+
 ## 0.6.6 (2023-01-30)
 
 * Don't throw an error when a microcopy fails to parse its arguments

@@ -54,7 +54,7 @@ MCEl.setMethod(function introduced() {
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.7
  */
 MCEl.setMethod(function ensureContent() {
 
@@ -64,6 +64,7 @@ MCEl.setMethod(function ensureContent() {
 
 	this.delayAssemble(async () => {
 		let instance = new Classes.Alchemy.Microcopy(this.key, this.parameters);
+		instance.renderer = this.hawkejs_renderer;
 
 		let el = await instance.renderHawkejsContent();
 
