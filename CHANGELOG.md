@@ -1,4 +1,4 @@
-## 0.6.7 (WIP)
+## 0.6.7 (2023-06-17)
 
 * Fix microcopy instance not having a renderer context
 
