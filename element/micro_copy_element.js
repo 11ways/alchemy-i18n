@@ -28,6 +28,15 @@ MCEl.setAttribute('key');
 MCEl.setAssignedProperty('parameters');
 
 /**
+ * Optional fallback
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.6.8
+ * @version  0.6.8
+ */
+MCEl.setAssignedProperty('fallback');
+
+/**
  * The element is being retained
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
@@ -54,7 +63,7 @@ MCEl.setMethod(function introduced() {
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.7
+ * @version  0.6.8
  */
 MCEl.setMethod(function ensureContent() {
 
@@ -65,6 +74,10 @@ MCEl.setMethod(function ensureContent() {
 	this.delayAssemble(async () => {
 		let instance = new Classes.Alchemy.Microcopy(this.key, this.parameters);
 		instance.renderer = this.hawkejs_renderer;
+
+		if (this.fallback != null) {
+			instance.fallback = this.fallback;
+		}
 
 		let el = await instance.renderHawkejsContent();
 

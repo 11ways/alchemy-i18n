@@ -1,3 +1,7 @@
+## 0.6.8 (WIP)
+
+* Improve the microcopy fallback support
+
 ## 0.6.7 (2023-06-17)
 
 * Fix microcopy instance not having a renderer context

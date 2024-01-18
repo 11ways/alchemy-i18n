@@ -43,13 +43,13 @@ Microcopy.enforceProperty(function renderer(value, old_value) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.8
  *
  * @return   {String}
  */
 Microcopy.enforceProperty(function fallback(value, old_value) {
 
-	if (!value) {
+	if (value == null) {
 		// @TODO: add other parameters
 		return this.key;
 	}
@@ -62,7 +62,7 @@ Microcopy.enforceProperty(function fallback(value, old_value) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.6.8
  *
  * @return   {Microcopy}
  */
@@ -71,6 +71,7 @@ Microcopy.setStatic(function unDry(obj) {
 	var result = new Microcopy(obj.key, obj.parameters);
 
 	result.record = obj.record;
+	result.fallback = obj.fallback;
 
 	return result;
 });
@@ -90,6 +91,7 @@ Microcopy.setMethod(function toDry() {
 			key        : this.key,
 			parameters : this.parameters,
 			record     : this.record,
+			fallback   : this.fallback,
 		}
 	};
 });
@@ -294,13 +296,17 @@ Microcopy.setMethod(function createElement(tag_name) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.7
+ * @version  0.6.8
  */
 Microcopy.setMethod(function toElement() {
 
 	let element = this.createElement('micro-copy');
 	element.key = this.key;
 	element.parameters = this.parameters;
+	
+	if (this.fallback) {
+		element.fallback = this.fallback;
+	}
 
 	return element;
 });
