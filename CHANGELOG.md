@@ -1,4 +1,4 @@
-## 0.6.8 (WIP)
+## 0.6.8 (2024-01-22)
 
 * Improve the microcopy fallback support
 
