@@ -273,3 +273,34 @@ Microcopy.setDocumentMethod(function scoreParameters(parameters) {
 
 	return score;
 });
+
+/**
+ * Does this record contain the given filter?
+ *
+ * @author   Jelle De Loecker <jelle@elevenways.be>
+ * @since    0.7.0
+ * @version  0.7.0
+ *
+ * @param    {string}   filter_name
+ *
+ * @return   {boolean}
+ */
+Microcopy.setDocumentMethod(function hasFilter(filter_name) {
+
+	if (!this.filters || !this.filters.length) {
+		return false;
+	}
+
+	let filter,
+	    i;
+
+	for (i = 0; i < this.filters.length; i++) {
+		filter = this.filters[i];
+
+		if (filter.name == filter_name) {
+			return true;
+		}
+	}
+
+	return false;
+});

@@ -1,6 +1,7 @@
 ## 0.7.0 (WIP)
 
 * Upgrade to Alchemy v1.4.0
+* Add support for `titleize` style parameter
 
 ## 0.6.8 (2024-01-22)
 

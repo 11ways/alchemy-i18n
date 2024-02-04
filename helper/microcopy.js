@@ -244,7 +244,7 @@ Microcopy.setMethod(function renderTranslation() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.7
+ * @version  0.7.0
  */
 Microcopy.setMethod(function prepareResult() {
 
@@ -261,6 +261,23 @@ Microcopy.setMethod(function prepareResult() {
 
 		if (rendered == null) {
 			rendered = this.fallback;
+		}
+	}
+
+	if (rendered && this.parameters?.style) {
+
+		let apply_style = true;
+
+		if (typeof this.record?.hasFilter == 'function') {
+			apply_style = !this.record.hasFilter('style');
+		}
+
+		if (apply_style) {
+			let style = this.parameters.style;
+
+			if (style == 'title') {
+				rendered = rendered.titleize();
+			}
 		}
 	}
 
