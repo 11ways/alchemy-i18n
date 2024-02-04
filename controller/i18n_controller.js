@@ -8,9 +8,7 @@
  * @since         0.2.0
  * @version       0.5.0
  */
-var I18n = Function.inherits('Alchemy.Controller.App', function I18n(conduit, options) {
-	I18n.super.call(this, conduit, options);
-});
+const I18n = Function.inherits('Alchemy.Controller.App', 'I18n');
 
 /**
  * Get the wanted translation
@@ -26,7 +24,7 @@ var I18n = Function.inherits('Alchemy.Controller.App', function I18n(conduit, op
 I18n.setAction(async function translation(conduit, domain, key) {
 
 	// Get the translation model (probably I18n unless overriden)
-	var model = this.getModel(alchemy.plugins.i18n.model);
+	var model = this.getModel(alchemy.settings.plugins.i18n.model);
 
 	let translation = await model.getTranslation(domain, key);
 
@@ -47,7 +45,7 @@ I18n.setAction(async function translation(conduit, domain, key) {
 I18n.setAction(async function string(conduit, domain, key) {
 
 	// Get the translation model (probably I18n unless overriden)
-	var model = this.getModel(alchemy.plugins.i18n.model);
+	var model = this.getModel(alchemy.settings.plugins.i18n.model);
 
 	let translation = await model.getTranslatedString(domain, key, conduit.locales);
 

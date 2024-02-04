@@ -319,7 +319,7 @@ I18n.setMethod(async function renderHawkejsContent(renderer) {
 
 		let locales = this.options.locales,
 		    result,
-		    model = this.getModel(alchemy.plugins.i18n.model),
+		    model = this.getModel(alchemy.settings.plugins.i18n.model),
 		    error;
 
 		if ((!locales || locales.length == 0) && renderer) {

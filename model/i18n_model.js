@@ -1,8 +1,3 @@
-// Don't load this model if a custom model is used
-if (alchemy.plugins.i18n.custom_model) {
-	return;
-}
-
 /**
  * I18n model
  *

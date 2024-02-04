@@ -1,11 +1,4 @@
 const Microcopy = Classes.Hawkejs.Model.getClass('Microcopy');
-let copy_cache;
-
-if (Blast.isNode && alchemy.plugins.i18n.translation_server) {
-	copy_cache = alchemy.getCache('remote_i18n_microcopy', {
-		max_age : '2 hours'
-	});
-}
 
 /**
  * Find records for the given parameters
@@ -13,7 +6,7 @@ if (Blast.isNode && alchemy.plugins.i18n.translation_server) {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.6.1
- * @version  0.6.4
+ * @version  0.7.0
  *
  * @param    {String}         key
  * @param    {Object|Array}   parameters
@@ -80,7 +73,9 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 	let records = await this.find('all', crit);
 	records = Array.cast(records);
 
-	if (!records.length && alchemy.plugins.i18n.translation_server && alchemy.plugins.i18n.access_key) {
+	if (!records.length && alchemy.settings.plugins.i18n.remote.translation_server && alchemy.settings.plugins.i18n.remote.access_key) {
+
+		const copy_cache = alchemy.plugins.i18n.getRemoteCache();
 
 		let cache_id = Object.checksum([key, parameters, locales]);
 
@@ -88,7 +83,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 
 		if (cached == null) {
 
-			let url = alchemy.plugins.i18n.translation_server.assign({key: key});
+			let url = alchemy.settings.plugins.i18n.remote.translation_server.assign({key: key});
 			url = RURL.parse(url);
 
 			if (parameters) {
@@ -102,7 +97,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 			let fetch_options = {
 				url     : url,
 				headers : {
-					'access-key': alchemy.plugins.i18n.access_key,
+					'access-key': alchemy.settings.plugins.i18n.remote.access_key,
 				}
 			};
 
