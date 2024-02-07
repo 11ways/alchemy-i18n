@@ -176,11 +176,16 @@ Microcopy.setMethod(async function findTranslation() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.4
+ * @version  0.7.0
  */
 Microcopy.setMethod(function renderTranslation() {
 
 	if (!this.record) {
+		return;
+	}
+
+	// If the weight is negative, prefer any fallbacks
+	if (this.record.weight < 0 && this.fallback) {
 		return;
 	}
 
