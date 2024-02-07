@@ -39,6 +39,31 @@ Microcopy.enforceProperty(function renderer(value, old_value) {
 });
 
 /**
+ * Enforce the parameters property
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.7.0
+ * @version  0.7.0
+ *
+ * @return   {Object}
+ */
+Microcopy.enforceProperty(function parameters(value, old_value) {
+
+	if (value) {
+
+		let {fallback, ...rest} = value;
+
+		if (fallback) {
+			this.fallback = fallback;
+		}
+
+		value = rest;
+	}
+
+	return value;
+});
+
+/**
  * unDry an object
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>

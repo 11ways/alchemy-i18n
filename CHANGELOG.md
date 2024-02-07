@@ -4,6 +4,7 @@
 * Add support for `titleize` style parameter
 * The `fallback` property will not default to the `key` property anymore
 * Translation records with a negative weight will not be used when a fallback is given
+* When the parameters contain a `fallback` property, it will be used as the fallback value and not as a filter
 
 ## 0.6.8 (2024-01-22)
 
