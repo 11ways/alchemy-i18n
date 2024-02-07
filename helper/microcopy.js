@@ -39,30 +39,11 @@ Microcopy.enforceProperty(function renderer(value, old_value) {
 });
 
 /**
- * The fallback translation
- *
- * @author   Jelle De Loecker   <jelle@elevenways.be>
- * @since    0.6.1
- * @version  0.6.8
- *
- * @return   {String}
- */
-Microcopy.enforceProperty(function fallback(value, old_value) {
-
-	if (value == null) {
-		// @TODO: add other parameters
-		return this.key;
-	}
-
-	return value;
-});
-
-/**
  * unDry an object
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.6.1
- * @version  0.6.8
+ * @version  0.7.0
  *
  * @return   {Microcopy}
  */
@@ -71,7 +52,10 @@ Microcopy.setStatic(function unDry(obj) {
 	var result = new Microcopy(obj.key, obj.parameters);
 
 	result.record = obj.record;
-	result.fallback = obj.fallback;
+
+	if (obj.fallback) {
+		result.fallback = obj.fallback;
+	}
 
 	return result;
 });
@@ -255,12 +239,12 @@ Microcopy.setMethod(function prepareResult() {
 	let rendered;
 
 	if (!this.record) {
-		rendered = this.fallback;
+		rendered = this.fallback || this.key;
 	} else {
 		rendered = this.rendered;
 
 		if (rendered == null) {
-			rendered = this.fallback;
+			rendered = this.fallback || this.key;
 		}
 	}
 
@@ -281,11 +265,8 @@ Microcopy.setMethod(function prepareResult() {
 		}
 	}
 
-	let element = this.createElement('micro-copy');
-	element.key = this.key;
+	let element = this.toElement();
 	element.innerHTML = rendered;
-
-	// @TODO: parameters & propper html handling
 
 	this[Hawkejs.RESULT] = element;
 
@@ -320,7 +301,7 @@ Microcopy.setMethod(function toElement() {
 	let element = this.createElement('micro-copy');
 	element.key = this.key;
 	element.parameters = this.parameters;
-	
+
 	if (this.fallback) {
 		element.fallback = this.fallback;
 	}

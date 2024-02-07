@@ -5,9 +5,7 @@
  * @since    0.6.1
  * @version  0.6.1
  */
-const MCEl = Function.inherits('Alchemy.Element', function MicroCopy() {
-	MicroCopy.super.call(this);
-});
+const MCEl = Function.inherits('Alchemy.Element', 'MicroCopy');
 
 /**
  * The key of the microcopy

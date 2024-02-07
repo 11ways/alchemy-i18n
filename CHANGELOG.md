@@ -2,6 +2,7 @@
 
 * Upgrade to Alchemy v1.4.0
 * Add support for `titleize` style parameter
+* The `fallback` property will not default to the `key` property anymore
 
 ## 0.6.8 (2024-01-22)
 
