@@ -41,7 +41,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 		return records;
 	}
 
-	let count = parameters.length;
+	let parameter_count = parameters.length;
 
 	let crit = this.find();
 	crit.where('key', key);
@@ -52,7 +52,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
 
 	let or = crit.or();
 
-	if (!count) {
+	if (!parameter_count) {
 
 		or.where('filters.optional', true);
 		or.where('filters').isEmpty();
@@ -143,7 +143,7 @@ Microcopy.setMethod(async function findRecords(key, parameters, locales) {
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.6.1
- * @version  0.6.1
+ * @version  0.7.0
  *
  * @param    {String}   key
  * @param    {Object}   parameters
@@ -172,6 +172,7 @@ Microcopy.setMethod(async function findTranslation(key, parameters, locales) {
 
 	let records = await this.findRecords(key, keys, locales);
 
+	// If nothing could be found *with* parameters, find all of them
 	if (records.length == 0 && parameter_count) {
 		return this.findTranslation(key, null, locales);
 	}
@@ -202,8 +203,14 @@ Microcopy.setMethod(async function findTranslation(key, parameters, locales) {
 		scores.push(score);
 	}
 
-	let max_score = scores.max(),
-	    index = scores.indexOf(max_score);
+	let max_score = scores.max();
+
+	// If none of the records had a positive score, try again without parameters
+	if (max_score == 0) {
+		return this.findTranslation(key, null, locales);
+	}
+
+	let index = scores.indexOf(max_score);
 
 	let result = records[index];
 

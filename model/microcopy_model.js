@@ -14,7 +14,7 @@ const Microcopy = Function.inherits('Alchemy.Model.App', 'Microcopy');
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.6.0
- * @version  0.6.4
+ * @version  0.7.0
  */
 Microcopy.constitute(function addFields() {
 
@@ -36,7 +36,10 @@ Microcopy.constitute(function addFields() {
 	filters.addField('optional', 'Boolean');
 
 	// Value to select
-	filters.addField('value', 'String', {title: 'Parameter value'});
+	filters.addField('value', 'String', {
+		title       : 'Parameter value',
+		description : 'An empty value will match anything (score +1), "*" will match anything (score +5), and an exact match will score +10',
+	});
 
 	this.addField('filters', filters, {array: true});
 

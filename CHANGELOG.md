@@ -5,6 +5,7 @@
 * The `fallback` property will not default to the `key` property anymore
 * Translation records with a negative weight will not be used when a fallback is given
 * When the parameters contain a `fallback` property, it will be used as the fallback value and not as a filter
+* If there are no translation records with a positive filter score, they will not be used
 
 ## 0.6.8 (2024-01-22)
 
