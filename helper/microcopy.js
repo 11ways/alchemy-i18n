@@ -51,13 +51,25 @@ Microcopy.enforceProperty(function parameters(value, old_value) {
 
 	if (value) {
 
-		let {fallback, ...rest} = value;
+		let {fallback, ...rest} = value,
+		    key,
+		    val;
 
 		if (fallback) {
 			this.fallback = fallback;
 		}
 
-		value = rest;
+		value = {};
+
+		for (key in rest) {
+			val = rest[key];
+
+			if (val == null) {
+				continue;
+			}
+
+			value[key] = val;
+		}
 	}
 
 	return value;
