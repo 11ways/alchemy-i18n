@@ -275,7 +275,7 @@ Microcopy.setMethod(function renderTranslation() {
 Microcopy.setMethod(function prepareResult() {
 
 	if (this[Hawkejs.RESULT]) {
-		return this[Hawkejs.RESULT];
+		return this[Hawkejs.RESULT]();
 	}
 
 	let rendered;
@@ -307,12 +307,15 @@ Microcopy.setMethod(function prepareResult() {
 		}
 	}
 
-	let element = this.toElement();
-	element.innerHTML = rendered;
+	const toElement = () => {
+		let element = this.toElement();
+		element.innerHTML = rendered;
+		return element;
+	};
 
-	this[Hawkejs.RESULT] = element;
+	this[Hawkejs.RESULT] = toElement;
 
-	return element;
+	return toElement();
 });
 
 /**
