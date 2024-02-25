@@ -1,8 +1,8 @@
-## 0.7.1-alpha.1 (WIP)
+## 0.7.0-alpha.2 (2024-02-25)
 
 * Allow a `Microcopy` instance to be added to `Hawkejs` templates multiple times
 
-## 0.7.0 (2024-02-15)
+## 0.7.0-alpha.1 (2024-02-15)
 
 * Upgrade to Alchemy v1.4.0
 * Add support for `titleize` style parameter
