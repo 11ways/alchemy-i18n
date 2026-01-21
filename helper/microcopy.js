@@ -299,10 +299,24 @@ Microcopy.setMethod(function prepareResult() {
 		}
 
 		if (apply_style) {
-			let style = this.parameters.style;
+			let styles = this.parameters.style.split(',');
 
-			if (style == 'title') {
-				rendered = rendered.titleize();
+			for (let style of styles) {
+				style = style.trim().toLowerCase();
+
+				switch (style) {
+					case 'title':
+						rendered = rendered.titleize();
+						break;
+					
+					case 'lower':
+						rendered = rendered.toLowerCase();
+						break;
+					
+					case 'upper':
+						rendered = rendered.toUpperCase();
+						break;
+				}
 			}
 		}
 	}

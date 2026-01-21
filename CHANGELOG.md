@@ -1,3 +1,7 @@
+## 0.7.0 (WIP)
+
+* Add new style instructions to Microcopy
+
 ## 0.7.0-alpha.2 (2024-02-25)
 
 * Allow a `Microcopy` instance to be added to `Hawkejs` templates multiple times
