@@ -1,4 +1,4 @@
-## 0.7.0 (WIP)
+## 0.7.0 (2026-01-21)
 
 * Add new style instructions to Microcopy
 
