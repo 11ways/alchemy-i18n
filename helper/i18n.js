@@ -58,7 +58,7 @@ I18n.setProperty(function parameters() {
  *
  * @author   Jelle De Loecker   <jelle@develry.be>
  * @since    0.5.0
- * @version  0.5.0
+ * @version  0.7.0
  *
  * @return   {Object}
  */
@@ -69,7 +69,7 @@ I18n.setProperty(function view() {
 	}
 
 	if (Blast.isBrowser) {
-		return hawkejs.scene.generalView;
+		return hawkejs.scene?.generalView;
 	}
 
 }, function setView(view) {
